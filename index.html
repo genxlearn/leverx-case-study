@@ -1,0 +1,1441 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#131613">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22310%20480%20236%20236%22%3E%3Crect%20x%3D%22310%22%20y%3D%22480%22%20width%3D%22236%22%20height%3D%22236%22%20fill%3D%22%23131613%22%2F%3E%3Cpath%20fill%3D%22%239af84d%22%20d%3D%22M334%20695%20445%20499h77zM334%20695l153-63%2035%2063z%22%2F%3E%3C%2Fsvg%3E">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LeverX Case Study, Duc Pham">
+<meta property="og:description" content="Designing LeverX for traders who have seconds to read their risk.">
+<meta property="og:url" content="https://leverx.ducpm.space/">
+<meta property="og:image" content="https://leverx.ducpm.space/brand/b17.webp">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://leverx.ducpm.space/">
+<title>LeverX Case Study</title>
+<meta name="description" content="Duc Pham's UX/UI case study for LeverX, a perpetual DEX on MegaETH. Sample data only.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="scrollcraft.css">
+<style>
+/* Layout: a case study in the LeverX palette. A laptop opens on a tennis court, then the page reads in order:
+   summary, problem, role, approach, challenges, solutions, results, next step. Single dark look by choice. */
+:root{
+  color-scheme:dark;
+  --pitch:#131613; --raise:#1b201a; --raise-2:#242a22;
+  --line:rgba(235,242,226,.15); --line-2:rgba(235,242,226,.3);
+  --ink:#f2f5ed; --soft:#adb6a6;
+  --lime:#9af84d; --turf:#516838; --white:#fff;
+  --amber:#f5a524; --red:#ff7464; --flood:#a81f16;
+  --acc:var(--lime);
+  --f-text:"Space Grotesk","Helvetica Neue",Arial,sans-serif;
+  --f-data:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --gl:max(16px,env(safe-area-inset-left,0px)); --gr:max(16px,env(safe-area-inset-right,0px));
+  --bar:48px; --strip:36px;
+  --sc-canvas:#131613; --sc-surface:#1b201a; --sc-ink:#f2f5ed; --sc-ink-soft:#adb6a6; --sc-accent:#9af84d; --sc-accent-ink:#131613;
+  --sc-font-display:var(--f-text); --sc-font-text:var(--f-text); --sc-font-mono:var(--f-data);
+}
+:root[data-state="warn"]{--acc:var(--amber)}
+:root[data-state="danger"]{--acc:#fff}
+*{box-sizing:border-box}
+html{background:var(--pitch);scroll-padding-top:var(--bar)}
+body{margin:0;background:var(--pitch);color:var(--ink);font:400 16px/1.55 var(--f-text);-webkit-font-smoothing:antialiased;overflow-x:clip}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--pitch)}
+h1,h2,h3,p,dl,dd,ol,ul,figure{margin:0;padding:0}
+h1,h2,h3{text-wrap:balance;font-weight:600}
+p{text-wrap:pretty}
+ul,ol{list-style:none}
+a{color:inherit}
+button,input,textarea{font:inherit;color:inherit}
+button{background:none;border:0;padding:0;cursor:pointer}
+img{display:block;max-width:100%;height:auto}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.data{font-family:var(--f-data);font-variant-numeric:tabular-nums;font-size:12.5px;letter-spacing:.01em}
+.label{font-family:var(--f-data);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.gut{padding-left:var(--gl);padding-right:var(--gr)}
+
+/* app chrome */
+.bar{position:fixed;inset:0 0 auto;z-index:40;padding-top:env(safe-area-inset-top,0px);background:var(--pitch);border-bottom:1px solid var(--line);transition:background-color .2s,border-color .2s,opacity .2s}
+.bar-in{height:var(--bar);display:flex;align-items:center;gap:24px}
+.who{display:flex;align-items:baseline;gap:10px;text-decoration:none;white-space:nowrap;min-width:0}
+.who b{font-weight:700;letter-spacing:-.01em}
+.who span{color:var(--soft);font-size:14px}
+.tabs{display:flex;gap:4px;margin-left:auto}
+.tabs a{display:flex;align-items:center;height:32px;padding-inline:10px;text-decoration:none;color:var(--soft);font-size:14px;border-radius:4px;transition:color .15s,background-color .15s}
+.tabs a[aria-current="true"]{color:var(--ink);background:var(--raise-2)}
+.talk{display:inline-flex;align-items:center;justify-content:center;min-height:32px;padding:0 12px;background:var(--acc);color:var(--pitch);border-radius:4px;font-weight:600;font-size:14px;text-decoration:none;white-space:nowrap;transition:transform .12s,background-color .2s}
+.talk:active{transform:translateY(1px)}
+body[data-chrome="clear"] .bar{background:transparent;border-color:transparent}
+body[data-chrome="clear"] .who span{color:var(--ink)}
+body[data-chrome="clear"] .tabs a{color:var(--ink)}
+body[data-chrome="gone"] .bar{opacity:0;pointer-events:none}
+.strip{position:fixed;inset:auto 0 0;z-index:40;background:var(--raise);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);transform:translateY(0);transition:transform .25s cubic-bezier(.23,1,.32,1),background-color .2s}
+body[data-strip="off"] .strip{transform:translateY(102%)}
+.strip-in{height:var(--strip);display:flex;align-items:center;gap:20px;white-space:nowrap;overflow:hidden}
+.strip b{font-weight:500;color:var(--ink)}
+.strip span{color:var(--soft)}
+.strip .chip{margin-left:auto;display:inline-flex;align-items:center;gap:8px;color:var(--ink)}
+.chip i{width:8px;height:8px;border-radius:50%;background:var(--acc);flex:none}
+:root[data-state="danger"] .strip{background:var(--flood)}
+:root[data-state="danger"] .strip span{color:#fff}
+.strip-nav{display:none}
+
+/* threshold */
+.h-stage{overflow:hidden;background:var(--pitch);height:100vh;height:100svh;--hp:0;--mx:0;--my:0;--fade:0}
+.h-plate,.h-shadow,.h-near,.h-laptop,.h-final{position:absolute}
+.h-plate{inset:-7%;background:#4d6436;opacity:calc(1 - var(--fade));transform:translate3d(calc(var(--mx)*-6px),calc(var(--hp)*-2.5% + var(--my)*-4px),0) scale(calc(1 + var(--hp)*.05));will-change:transform}
+.h-plate::after{content:"";position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.28}
+.h-plate svg{position:absolute;inset:0;width:100%;height:100%}
+.h-shadow{inset:-20%;opacity:calc(1 - var(--fade));transform:translate3d(calc(var(--hp)*-7vw + var(--mx)*-12px),calc(var(--my)*-8px),0);will-change:transform;pointer-events:none}
+.h-shadow i{position:absolute;display:block;background:#10160c;filter:blur(7px);transform:rotate(-37deg);transform-origin:0 50%;height:13px;width:190%;opacity:.42}
+.h-shadow i:nth-child(1){left:-30%;top:112%}
+.h-shadow i:nth-child(2){left:-22%;top:118%;height:7px}
+.h-near{inset:-30%;pointer-events:none;opacity:calc(1 - var(--fade));transform:translate3d(calc(var(--hp)*34vw + var(--mx)*-30px),calc(var(--hp)*-12vh + var(--my)*-18px),0);will-change:transform;z-index:5}
+.h-near i{position:absolute;display:block;left:42%;top:-12%;width:17vw;height:150%;background:#0c1209;filter:blur(38px);transform:rotate(38deg);opacity:.48}
+.h-copy{position:absolute;z-index:3;left:var(--gl);right:var(--gr);top:calc(var(--bar) + 6vh);max-width:min(48vw,700px);display:grid;gap:18px;justify-items:start}
+.h-copy h1{font-size:clamp(36px,4.3vw,66px);line-height:1.02;letter-spacing:-.035em;font-weight:600;color:var(--white)}
+.h-copy p{font-size:clamp(17px,1.4vw,20px);line-height:1.4;max-width:34ch;color:var(--white)}
+.h-copy .talk{min-height:44px;padding:0 18px;font-size:16px;background:var(--lime)}
+.h-laptop{inset:0;z-index:4;perspective:4200px;perspective-origin:50% 100%;pointer-events:none}
+.h-canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .5s;touch-action:pan-y;pointer-events:none}
+.h-laptop.is3d .h-canvas{opacity:1}
+.h-laptop.is3d .mb{visibility:hidden}
+.mb{--w:min(46vw,calc((100svh - 120px)/.8));position:absolute;right:6vw;bottom:9vh;width:var(--w);transform-style:preserve-3d;transform-origin:50% 60%;transform:scale(calc(1 + var(--dive,0)*1.2)) translate3d(calc(var(--dive,0)*-22vw),calc(var(--dive,0)*-8vh),0)}
+.mb-lid{position:relative;transform-origin:50% 100%;transform:rotateX(var(--lid,-78deg));background:#0b0c0e;border-radius:calc(var(--w)*.03) calc(var(--w)*.03) calc(var(--w)*.006) calc(var(--w)*.006);padding:calc(var(--w)*.017) calc(var(--w)*.017) calc(var(--w)*.026);box-shadow:inset 0 0 0 1px #34363b;backface-visibility:hidden}
+.mb-screen{aspect-ratio:1512/982;overflow:hidden;background:#000;border-radius:calc(var(--w)*.006)}
+.mb-screen img{width:100%}
+.mb-base{width:114%;margin-left:-7%;height:calc(var(--w)*.032);background:linear-gradient(#e4e5e7,#c4c6c9 35%,#8d9094);border-radius:calc(var(--w)*.004) calc(var(--w)*.004) calc(var(--w)*.05) calc(var(--w)*.05)/calc(var(--w)*.004) calc(var(--w)*.004) calc(var(--w)*.03) calc(var(--w)*.03)}
+.h-final{inset:0;z-index:6;width:100%;height:100%;object-fit:contain;background:var(--pitch);opacity:var(--final,0);pointer-events:none}
+
+/* act frames */
+.frame{position:relative;display:block;width:100%;border:1px solid var(--line-2);border-radius:6px;overflow:hidden;background:#0b0d0b;cursor:zoom-in;transition:border-color .15s}
+.frame img{width:100%}
+@media (hover:hover) and (pointer:fine){.frame:hover{border-color:var(--lime)}}
+.act-head{display:grid;gap:8px;max-width:64ch}
+.act-head h2{font-size:clamp(26px,2.6vw,38px);line-height:1.08;letter-spacing:-.025em}
+.act-head p{color:var(--soft)}
+
+/* problem */
+.cmp{width:100%;border-collapse:collapse;text-align:left}
+.cmp th{font:400 12px var(--f-data);letter-spacing:.06em;text-transform:uppercase;color:var(--soft);padding:0 20px 10px 0;border-bottom:1px solid var(--line-2)}
+.cmp td{padding:16px 20px 16px 0;border-bottom:1px solid var(--line);vertical-align:top;font-size:15.5px;line-height:1.45;color:var(--soft)}
+.cmp td:first-child{color:var(--ink);font-weight:600;white-space:nowrap;width:150px}
+.cmp td:first-child a{display:block;font:400 12px var(--f-data);color:var(--soft);margin-top:2px;text-underline-offset:2px}
+.cmp td:nth-child(2){width:36%;color:var(--ink)}
+.qs{display:grid;gap:12px;margin-top:16px}
+.q-list li{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,8fr) auto;gap:8px 24px;align-items:baseline;border-top:1px solid var(--line);padding-block:14px}
+.q-list li:last-child{border-bottom:1px solid var(--line)}
+.q-list p{color:var(--soft);font-size:15px;line-height:1.45;max-width:64ch}
+.q-list p.q{color:var(--ink);font-size:clamp(17px,1.5vw,20px);font-weight:500;line-height:1.25;letter-spacing:-.01em}
+.q-list button{min-height:36px;padding:0 12px;border:1px solid var(--line-2);border-radius:4px;font-size:14px;white-space:nowrap;transition:background-color .15s,color .15s,border-color .15s}
+@media (hover:hover) and (pointer:fine){.q-list button:hover{background:var(--lime);border-color:var(--lime);color:var(--pitch)}}
+.cmp tr.ours td{background:var(--raise);color:var(--ink);border-bottom:1px solid var(--lime);border-top:1px solid var(--lime)}
+.cmp tr.ours td:first-child{padding-left:12px;color:var(--lime)}
+.cmp tr.ours b{color:var(--lime);font-weight:600}
+.thesis{font-size:clamp(20px,2vw,28px);line-height:1.25;letter-spacing:-.015em;max-width:44ch}
+.cmp-note{color:var(--soft);font-size:13px;max-width:70ch}
+.pd{display:grid;gap:10px}
+.pd>div{display:grid;gap:2px}
+.pd .label{font-size:11.5px}
+.pd .label.d{color:var(--lime)}
+.pd p{margin:0}
+
+/* terminal */
+.terminal{padding-block:40px 72px;display:grid;gap:56px;border-top:1px solid var(--line)}
+.t-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,320px);gap:32px;align-items:start}
+.t-note{position:sticky;top:calc(var(--bar) + 20px);display:grid;gap:6px;border-top:1px solid var(--lime);padding-top:12px}
+.t-note h3{font-size:20px;letter-spacing:-.015em;line-height:1.2}
+.t-note p{color:var(--ink);font-size:15px}
+
+/* ticket */
+.ticket{padding-block:72px;border-top:1px solid var(--line);background:var(--raise);display:grid;gap:28px}
+.ticket-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,380px);gap:32px;align-items:start}
+.seg{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.seg button{min-height:36px;padding:0 12px;font-size:14px;color:var(--soft);border-radius:4px;border:1px solid var(--line);transition:color .15s,background-color .15s,border-color .15s}
+.seg button[aria-pressed="true"]{color:var(--pitch);background:var(--lime);border-color:var(--lime);font-weight:600}
+#tNote{font-size:15px;margin-top:14px;min-height:8.2em;max-width:68ch}
+.form{background:var(--pitch);border:1px solid var(--line-2);border-radius:6px;padding:20px;display:grid;gap:16px}
+.lev-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.lev-top output{font:600 clamp(44px,5vw,64px)/1 var(--f-text);letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--lime)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;cursor:grab;margin:0;--pct:6%}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--lime) var(--pct),var(--line-2) var(--pct))}
+input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:var(--line-2)}
+input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:var(--lime)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-10px;border-radius:50%;background:var(--lime);border:4px solid var(--pitch);box-shadow:0 0 0 1px var(--lime)}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--lime);border:4px solid var(--pitch);box-shadow:0 0 0 1px var(--lime)}
+.ticks{display:flex;justify-content:space-between;color:var(--soft);margin-top:-8px}
+.kv{display:grid;gap:8px}
+.kv div{display:flex;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-top:8px}
+.kv dt{color:var(--soft);font-size:14px}
+.kv dd{font-family:var(--f-data);font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.warnline{color:var(--amber);font-size:14px;min-height:2.9em}
+.fine{color:var(--soft);font-size:13px;line-height:1.45}
+
+
+/* margin call */
+.p-stage{height:100vh;height:100svh;overflow:hidden;background:var(--pitch);padding:calc(var(--bar) + 16px) var(--gr) calc(var(--strip) + 16px) var(--gl);display:grid;grid-template-columns:minmax(300px,4fr) minmax(0,7fr);gap:clamp(20px,3vw,48px);align-items:center;transition:background-color .35s}
+.p-left{display:grid;gap:10px;justify-items:start;min-width:0}
+.p-left h2{font-size:15px;font-weight:500;color:var(--ink)}
+.p-num{display:block;font:600 clamp(96px,17vw,264px)/.84 var(--f-text);letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:var(--acc);margin-left:-.04em}
+.p-state{font-size:clamp(18px,1.6vw,24px);font-weight:600;letter-spacing:-.015em;line-height:1.2}
+.p-note{font-size:16px;line-height:1.42;color:var(--ink);max-width:40ch;min-height:4.3em}
+.p-add{min-height:44px;padding:0 18px;border-radius:4px;background:var(--white);color:var(--flood);font-weight:700;transition:transform .12s,opacity .15s}
+.p-add:active{transform:translateY(1px)}
+.p-add[disabled]{visibility:hidden}
+.p-kv{display:flex;flex-wrap:wrap;gap:6px 20px;color:var(--soft)}
+.p-kv b{font-weight:500;color:var(--ink)}
+.p-right{display:grid;gap:10px;min-width:0}
+.p-frame{position:relative;aspect-ratio:1512/982;border:1px solid var(--line-2);border-radius:6px;overflow:hidden;background:#0b0d0b;max-height:calc(100svh - var(--bar) - var(--strip) - 150px);width:100%}
+.p-frame img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;object-position:top;opacity:0;transition:opacity .28s;transform-origin:var(--ox,50%) var(--oy,50%);transform:scale(var(--z,1));will-change:transform,opacity}
+.p-frame img.on{opacity:1}
+.p-chart{width:100%;height:84px;display:block;overflow:visible}
+.p-chart text{font:11px var(--f-data);fill:var(--soft)}
+.p-stage.flood{background:var(--flood)}
+.p-stage.flood .p-note,.p-stage.flood .p-state,.p-stage.flood h2,.p-stage.flood .p-kv,.p-stage.flood .p-kv b{color:#fff}
+.p-stage.flood .p-num{color:#fff}
+.p-stage.flood .p-frame{border-color:rgba(255,255,255,.6)}
+.p-stage.flood .p-chart text{fill:#fff}
+.p-demo{color:var(--soft);font-size:12.5px}
+.p-stage.flood .p-demo{color:#fff}
+
+.case{display:grid;gap:16px;border-top:1px solid var(--line-2);padding-top:20px}
+.case-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 20px}
+.case-head h3{font-size:clamp(22px,2.2vw,30px);line-height:1.12;letter-spacing:-.02em}
+.case>p{max-width:76ch;font-size:16px;line-height:1.5;color:var(--soft)}
+.case>p b{color:var(--ink);font-weight:600}
+.case .data{color:var(--lime);font-size:15px}
+.cmp.opt td:first-child{width:130px;white-space:normal}
+.cmp.opt td:nth-child(2){width:27%;color:var(--soft)}
+.cmp.opt td:nth-child(3){width:27%;color:var(--ink)}
+
+/* brand */
+.b-stage{height:100vh;height:100svh;background:var(--lime);color:var(--pitch);display:flex;align-items:center;overflow:hidden;--line:rgba(19,22,19,.25);padding-top:var(--bar);padding-bottom:var(--strip)}
+.b-rail{display:flex;gap:clamp(16px,2vw,32px);padding-inline:var(--gl) var(--gr);width:max-content;align-items:center}
+.b-lead{flex:none;width:min(84vw,430px);display:grid;gap:12px}
+.b-lead h2{font-size:clamp(40px,5.4vw,78px);line-height:.96;letter-spacing:-.04em}
+.b-lead p{font-size:17px;line-height:1.4;color:var(--pitch)}
+.b-item{flex:none;width:min(84vw,calc((100svh - 190px)*1.77),980px);display:grid;gap:8px}
+.b-item .frame{border-color:var(--pitch);aspect-ratio:16/9}
+.b-item .frame:hover,.b-item .frame:focus-visible{border-color:var(--pitch)}
+.b-item h3{font-size:16px}
+.b-item p{font-size:14.5px;line-height:1.35;color:var(--pitch)}
+.b-stage :focus-visible{outline-color:var(--pitch)}
+
+/* index */
+.index{padding-block:72px;background:var(--raise);display:grid;gap:20px;scroll-margin-top:var(--bar)}
+.ix-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ix-tools .seg{margin:0}
+.ix-tools .seg button span{font-family:var(--f-data);font-size:12px;margin-left:6px;opacity:.75}
+#ixSearch{flex:1 1 220px;min-height:36px;background:var(--pitch);border:1px solid var(--line-2);border-radius:4px;padding:0 10px;font-size:14px;max-width:320px}
+#ixSearch::placeholder{color:var(--soft)}
+.ix-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px;align-items:start}
+.ix-list{max-height:min(68svh,680px);overflow:auto;border-block:1px solid var(--line-2);scrollbar-gutter:stable;overscroll-behavior:auto}
+.ix-list button{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;width:100%;text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);align-items:baseline;transition:background-color .12s;min-height:44px}
+.ix-list li:last-child button{border-bottom:0}
+.ix-list button:hover,.ix-list button:focus-visible,.ix-list button[data-on="true"]{background:var(--raise-2)}
+.ix-list button[data-on="true"] .ix-t{color:var(--lime)}
+.ix-a{color:var(--soft)}
+.ix-t{font-size:15px;line-height:1.25}
+.ix-empty{padding:20px 8px;color:var(--soft)}
+.ix-preview{position:sticky;top:calc(var(--bar) + 16px);display:grid;gap:10px}
+.ix-preview .frame{max-height:min(56svh,560px)}
+.ix-preview h3{font-size:18px}
+.ix-preview p{color:var(--soft);max-width:60ch;min-height:3em}
+.ix-more{display:none}
+
+/* close */
+.close{--acc:var(--turf);--line:rgba(19,22,19,.2);background:var(--white);color:var(--pitch);padding-block:80px calc(var(--strip) + 32px);display:grid;gap:40px}
+.close-in{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:clamp(24px,4vw,64px);align-items:start}
+.close h2{font-size:clamp(40px,5.6vw,84px);line-height:.98;letter-spacing:-.04em;margin-bottom:24px}
+.pick{display:flex;flex-wrap:wrap;gap:8px;border:0;margin:0 0 16px;padding:0}
+.pick legend{font-weight:500;margin-bottom:8px;padding:0}
+.pick label{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid var(--pitch);border-radius:4px;cursor:pointer}
+.pick label:has(input:checked){background:var(--pitch);color:var(--lime)}
+.pick input{accent-color:var(--turf)}
+.close label[for=brief]{display:block;font-weight:500;margin-bottom:8px}
+#brief{display:block;width:100%;min-height:96px;border:1px solid var(--pitch);border-radius:4px;padding:10px 12px;background:var(--white);color:var(--pitch);resize:vertical;caret-color:var(--turf)}
+#brief::placeholder{color:#5c6459}
+.msg{background:#f1f4ec;border-radius:6px;padding:16px;display:grid;gap:12px}
+.msg h3{font-size:15px;font-weight:500}
+#msgOut{white-space:pre-wrap;font-size:15px;line-height:1.45;min-height:7em}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn-a,.btn-b{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:4px;font-weight:600;text-decoration:none;white-space:nowrap;transition:transform .12s}
+.btn-a{background:var(--pitch);color:var(--lime)}
+.btn-b{border:1px solid var(--pitch);color:var(--pitch)}
+.btn-a:active,.btn-b:active{transform:translateY(1px)}
+.close .fine{color:#4d554a}
+.close :focus-visible{outline-color:var(--turf)}
+.credit{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;border-top:1px solid var(--pitch);padding-top:16px;font-size:14px;line-height:1.45}
+.credit b{display:block;font-size:17px}
+.credit a{text-underline-offset:2px}
+
+/* viewer */
+dialog.view{width:100%;height:100%;max-width:none;max-height:none;margin:0;border:0;padding:max(10px,env(safe-area-inset-top,0px)) var(--gr) max(10px,env(safe-area-inset-bottom,0px)) var(--gl);background:var(--pitch);color:var(--ink);overflow:hidden}
+dialog.view[open]{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px}
+.v-top{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.v-top h2{font-size:16px;margin-right:auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v-top button{min-height:44px;min-width:44px;padding:0 12px;border:1px solid var(--line-2);border-radius:4px;font-size:14px}
+.v-body{overflow:auto;display:flex;justify-content:center;align-items:flex-start}
+.v-body img{max-width:min(100%,1600px)}
+.v-note{color:var(--soft);font-size:14.5px;max-width:80ch}
+
+/* case-study structure: a sticky parenthetical in the margin, a reading column, full-width moments between */
+.crumb{font-size:15px!important;color:var(--white);max-width:none!important}
+.crumb a{text-underline-offset:3px}
+.crumb span{opacity:.7;margin-inline:4px}
+.sec{display:grid;grid-template-columns:minmax(120px,3fr) minmax(0,9fr);gap:clamp(16px,3vw,48px);padding-block:clamp(64px,8vw,120px);align-items:start;scroll-margin-top:var(--bar)}
+.sec-l{position:sticky;top:calc(var(--bar) + 24px);font:400 13px/1.3 var(--f-data);color:var(--soft);transition:color .2s}
+.sec[data-on="true"] .sec-l{color:var(--lime)}
+.sec-b{display:grid;gap:24px;max-width:880px;min-width:0;font-size:17px;line-height:1.55}
+.big{font-size:clamp(30px,3.6vw,52px);line-height:1.05;letter-spacing:-.03em}
+.sub{font-size:clamp(20px,1.8vw,24px);letter-spacing:-.015em;line-height:1.2}
+.sum{font-size:clamp(19px,1.8vw,25px);line-height:1.38;font-style:italic;letter-spacing:-.01em}
+.paren{font:400 13px/1.3 var(--f-data)!important;color:var(--soft)!important}
+.dots{display:grid;gap:12px;color:var(--ink)}
+.dots li{position:relative;padding-left:20px}
+.dots li::before{content:"";position:absolute;left:0;top:.68em;width:7px;height:7px;background:var(--lime)}
+.co{display:grid;grid-template-columns:96px minmax(0,1fr);gap:24px;align-items:start;margin-top:8px}
+.co-mark{width:96px;height:auto}
+.co-t{display:grid;gap:6px}
+.co-t h2{font-size:clamp(24px,2.2vw,30px);letter-spacing:-.02em;line-height:1.1}
+.co-sub{color:var(--soft)}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;border-top:1px solid var(--line-2);padding-top:16px}
+.facts dt{font:400 12px var(--f-data);letter-spacing:.06em;text-transform:uppercase;color:var(--soft);margin-bottom:4px}
+.facts dd{margin:0;font-size:15px;line-height:1.35}
+.pill{justify-self:start;display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 18px;border:1px solid var(--line-2);border-radius:999px;text-decoration:none;font-size:15px;transition:border-color .15s,color .15s}
+@media (hover:hover) and (pointer:fine){.pill:hover{border-color:var(--lime);color:var(--lime)}}
+.shots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(10px,1.4vw,20px)}
+.shots .s-a{grid-column:1/-1}
+.plx{--v:0}
+.plx img{transform:scale(calc(1.09 - var(--v)*.09));transform-origin:50% 30%;will-change:transform}
+.frame{border-radius:10px}
+
+/* wall of screens: scroll slides the rows in opposite directions */
+.wall{height:min(92vh,840px);height:min(92svh,840px);overflow:hidden;background:var(--raise);display:grid;align-content:center;margin-top:clamp(0px,2vw,24px)}
+.w-tilt{display:grid;gap:clamp(10px,1.2vw,18px);transform:rotate(-6deg) scale(1.16);transform-origin:50% 50%}
+.w-row{display:flex;gap:clamp(10px,1.2vw,18px);width:max-content;transform:translate3d(var(--x,0px),0,0);will-change:transform}
+.w-row img{flex:none;width:clamp(240px,29vw,500px);aspect-ratio:1512/982;object-fit:cover;object-position:top;border-radius:8px;border:1px solid var(--line-2);background:#0b0d0b;cursor:zoom-in}
+.w-cap{background:var(--raise);padding-block:0 28px;color:var(--soft);font-size:15px}
+.w-cap a{color:var(--ink);text-underline-offset:3px}
+
+/* approach: the steps light up as the line reaches them */
+.ledger{position:relative;padding-left:26px;--lp:0}
+.ledger::before,.ledger::after{content:"";position:absolute;left:3px;top:24px;bottom:24px;width:1px;background:var(--line-2)}
+.ledger::after{background:var(--lime);transform:scaleY(var(--lp));transform-origin:top;width:2px;left:2.5px}
+.ledger li{position:relative;display:grid;grid-template-columns:minmax(120px,2fr) minmax(0,7fr);gap:20px;padding-block:16px;border-top:1px solid var(--line)}
+.ledger li:last-child{border-bottom:1px solid var(--line)}
+.ledger li::before{content:"";position:absolute;left:-26px;top:23px;width:7px;height:7px;background:var(--raise-2);outline:1px solid var(--line-2);transition:background-color .2s,outline-color .2s;z-index:1}
+.ledger li[data-on="true"]::before{background:var(--lime);outline-color:var(--lime)}
+.ledger h3{font-size:17px;letter-spacing:-.01em}
+.ledger p{color:var(--soft);font-size:16px;line-height:1.5}
+.qs{margin-top:24px}
+
+/* solutions */
+.prin{display:grid;gap:0;counter-reset:p}
+.prin li{counter-increment:p;display:grid;grid-template-columns:44px minmax(0,1fr);border-top:1px solid var(--line);padding-block:14px;color:var(--soft)}
+.prin li:last-child{border-bottom:1px solid var(--line)}
+.prin li::before{content:counter(p);font:500 14px/1.7 var(--f-data);color:var(--lime)}
+.prin b{color:var(--ink);font-weight:600}
+.act-head .label{color:var(--lime)}
+.quiet{min-height:70vh;min-height:70svh;display:grid;align-content:center;gap:12px;background:var(--pitch)}
+.quiet .label{color:var(--lime)}
+.quiet p{font-size:clamp(22px,2.4vw,32px);letter-spacing:-.02em;line-height:1.2;color:var(--soft)}
+.quiet b{display:block;font-weight:500;color:var(--ink)}
+
+/* results */
+.nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;border-top:1px solid var(--line-2);padding-top:16px}
+.nums dd{margin:0}
+.nums dt{color:var(--soft);font-size:14.5px;line-height:1.35;margin-top:4px;max-width:26ch}
+.num{display:block;font:600 clamp(52px,7vw,104px)/.95 var(--f-text);letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:var(--lime)}
+.out li{display:grid;grid-template-columns:96px minmax(0,1fr);gap:16px;align-items:baseline;border-top:1px solid var(--line);padding-block:14px}
+.out li:last-child{border-bottom:1px solid var(--line)}
+.tag{font:400 12px var(--f-data);letter-spacing:.04em;color:var(--soft)}
+.tag.on{color:var(--lime)}
+.bleed .frame{aspect-ratio:16/8}
+.bleed .frame img{height:100%;object-fit:cover}
+
+/* next project */
+.more{padding-block:clamp(56px,6vw,88px);display:grid;gap:20px;background:var(--pitch)}
+.more-head{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between}
+.more-head h2{font-size:clamp(30px,3.6vw,52px);letter-spacing:-.03em;line-height:1.05}
+.more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(10px,1.4vw,20px)}
+.more-card{display:grid;gap:8px;align-content:start;min-height:190px;padding:20px;border:1px solid var(--line-2);border-radius:10px;text-decoration:none;color:var(--soft);transition:border-color .15s,background-color .15s}
+.more-card b{font-size:clamp(22px,2.2vw,30px);letter-spacing:-.02em;color:var(--ink);font-weight:600;line-height:1.1}
+@media (hover:hover) and (pointer:fine){.more-card:hover{border-color:var(--lime);background:var(--raise)}}
+
+/* reading progress */
+.bar::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--acc);transform:scaleX(var(--rp,0));transform-origin:left;transition:opacity .2s}
+body[data-chrome="clear"] .bar::after{opacity:0}
+.terminal{border-top:0;padding-block:clamp(56px,7vw,96px)}
+.ticket{border-top:0}
+
+@media (max-width:980px){
+  :root{--strip:44px}
+  .tabs{display:none}
+  .who{margin-right:auto}
+  .who span{font-size:13px}
+  .strip-in{gap:12px}
+  .strip-in>span:not(.chip),.strip-in>.demo{display:none}
+  .strip .chip{margin:0;flex:none;padding-right:8px;border-right:1px solid var(--line)}
+  .strip-nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;margin-inline:-4px;flex:1;min-width:0}
+  .strip-nav::-webkit-scrollbar{display:none}
+  .strip-nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 9px;font-size:13.5px;text-decoration:none;color:var(--soft)}
+  .strip-nav a[aria-current="true"]{color:var(--ink);font-weight:600}
+  :root[data-state="danger"] .strip-nav a{color:#fff}
+  .h-copy{max-width:none;top:calc(var(--bar) + 18px);gap:12px}
+  .h-copy h1{font-size:clamp(34px,10vw,56px)}
+  .h-copy p{font-size:16px}
+  .mb{--w:82vw;right:9vw;bottom:8svh}
+  .h-near i{width:40vw}
+  .cmp,.cmp tbody,.cmp tr,.cmp td{display:block;width:auto}
+  .cmp thead{display:none}
+  .cmp tr{padding-block:14px;border-bottom:1px solid var(--line)}
+  .cmp td,.cmp td:nth-child(2),.cmp td:first-child{padding:0;border:0;width:auto;white-space:normal}
+  .cmp td:first-child{margin-bottom:6px}
+  .cmp td[data-h]{margin-top:8px}
+  .cmp td[data-h]::before{content:attr(data-h);display:block;font:400 11.5px var(--f-data);letter-spacing:.06em;text-transform:uppercase;color:var(--soft);margin-bottom:2px}
+  .cmp tr.ours{background:var(--raise);border-block:1px solid var(--lime);margin-inline:-8px;padding-inline:8px}
+  .cmp tr.ours td{background:none;border:0}
+  .cmp tr.ours td:first-child{padding:0}
+  .q-list li{grid-template-columns:minmax(0,1fr)}
+  .q-list button{justify-self:start;min-height:44px;margin-top:4px}
+  .t-row{grid-template-columns:minmax(0,1fr);gap:12px}
+  .t-note{position:static;border-top:0;padding-top:0}
+  .terminal{gap:40px}
+  .ticket-grid,.ix-grid,.close-in{grid-template-columns:minmax(0,1fr)}
+  .cmp.opt td,.cmp.opt td:first-child,.cmp.opt td:nth-child(2),.cmp.opt td:nth-child(3){width:auto}
+  .ticket,.index{padding-block:48px}
+  .p-stage{grid-template-columns:minmax(0,1fr);align-content:start;gap:8px;padding-top:calc(var(--bar) + 8px);padding-bottom:calc(var(--strip) + 8px)}
+  .p-left{gap:6px}
+  .p-num{font-size:clamp(80px,26vw,132px)}
+  .p-state{font-size:18px}
+  .p-note{font-size:15px;min-height:4.3em}
+  .p-kv{display:none}
+  .p-chart{display:none}
+  .p-add{position:relative;z-index:2}
+  .p-frame{max-height:none}
+  .ix-preview{display:none}
+  .ix-list{max-height:none;overflow:visible}
+  .ix-list button{grid-template-columns:72px minmax(0,1fr);padding-inline:0}
+  .ix-more{display:inline-flex;justify-self:start}
+  .ix-more[hidden]{display:none}
+  #ixSearch{max-width:none;flex-basis:100%}
+  .credit{grid-template-columns:minmax(0,1fr)}
+  .close{padding-top:56px}
+}
+@media (max-width:980px) and (max-height:700px){
+  .p-note{font-size:14px;min-height:3.9em;line-height:1.35}
+  .p-num{font-size:72px}
+  .p-demo{display:none}
+  .h-copy h1{font-size:32px}
+}
+@media (hover:none){.frame{cursor:pointer}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .h-stage{height:auto;min-height:100svh;padding-bottom:0}
+  .h-plate,.h-shadow,.h-near,.mb{transform:none}
+  .mb-lid{--lid:0deg}
+  .h-final{display:none}
+  .p-frame img{transform:none}
+}
+@media (max-width:980px){
+  .sec{grid-template-columns:minmax(0,1fr);gap:12px;padding-block:56px}
+  .sec-l{position:static}
+  .sec-b{font-size:16px;gap:20px}
+  .h-copy{gap:10px}
+  .h-copy h1{font-size:clamp(28px,8.2vw,48px);line-height:1.04}
+  .crumb{font-size:14px!important}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .co{grid-template-columns:64px minmax(0,1fr);gap:16px}
+  .co-mark{width:64px}
+  .ledger li{grid-template-columns:minmax(0,1fr);gap:4px}
+  .wall{height:64svh}
+  .w-row img{width:62vw}
+  .nums{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .num{font-size:clamp(40px,13vw,72px)}
+  .out li{grid-template-columns:minmax(0,1fr);gap:2px}
+  .more-grid{grid-template-columns:minmax(0,1fr)}
+  .more-card{min-height:0}
+  .bleed .frame{aspect-ratio:4/3}
+  .strip .chip{display:none}
+  body[data-demo="on"] .strip .chip{display:inline-flex}
+  body[data-demo="on"] .strip-nav{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .plx img,.w-row{transform:none}
+  .w-tilt{transform:none}
+  .ledger::after{transform:none}
+}
+[hidden]{display:none!important}
+</style>
+
+</head>
+<body>
+<header class="bar">
+  <div class="bar-in gut">
+    <a class="who" href="#top"><b>Duc Pham</b><span>LeverX case study</span></a>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#summary" data-nav="summary">Summary</a>
+      <a href="#problem" data-nav="problem">Problem</a>
+      <a href="#role" data-nav="role">Role</a>
+      <a href="#approach" data-nav="approach">Approach</a>
+      <a href="#challenges" data-nav="challenges">Challenges</a>
+      <a href="#solutions" data-nav="solutions">Solutions</a>
+      <a href="#results" data-nav="results">Results</a>
+      <a href="#next" data-nav="next">Next</a>
+    </nav>
+    <a class="talk" href="#talk">Talk to Duc</a>
+  </div>
+</header>
+
+<main>
+
+<section id="top" class="hero" data-sc-act="pin" data-sc-span="2.8">
+  <div data-sc-stage class="h-stage" id="hStage" data-sc-verify-state="0">
+    <div class="h-plate" aria-hidden="true">
+      <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="3">
+        <path d="M760 930 1120 300H1520L1860 930"/><path d="M905 680H1716"/><path d="M1320 300V680"/><path d="M1040 440H1600" stroke-opacity=".32"/>
+      </svg>
+    </div>
+    <div class="h-shadow" aria-hidden="true"><i></i><i></i></div>
+    <div class="h-copy" id="hCopy" data-sc-cue="0 0.3 0">
+      <p class="crumb"><a href="https://ducpm.space/projects" target="_blank" rel="noopener">Projects</a> <span aria-hidden="true">/</span> LeverX</p>
+      <h1>Designing LeverX for traders who have seconds to read their risk</h1>
+      <p>UX/UI lead for a perpetual DEX on MegaETH: 190 screens in a <span style="white-space:nowrap">12-week</span> sprint.</p>
+      <a class="talk" href="#talk">Talk to Duc</a>
+    </div>
+    <div class="h-laptop" id="hLaptop">
+      <canvas class="h-canvas" id="hCanvas" role="img" aria-label="A laptop opens to show the LeverX trading terminal"></canvas>
+      <div class="mb" aria-hidden="true"><div class="mb-lid"><div class="mb-screen"><img src="img/1-16076.webp?v=3" alt="" width="1512" height="982"></div></div><div class="mb-base"></div></div>
+    </div>
+    <div class="h-near" aria-hidden="true"><i></i></div>
+    <img class="h-final" id="hFinal" src="img/1-16076.webp?v=3" alt="LeverX trading terminal before a wallet is connected" width="1512" height="982">
+  </div>
+</section>
+
+<section id="summary" class="sec gut" data-sc-act="flow">
+  <p class="sec-l">(Summary)</p>
+  <div class="sec-b">
+    <p class="sum">LeverX is a perpetual DEX on MegaETH that pairs CEX-grade speed with full self-custody. I led UX/UI across the product, from first connect through positions, portfolio, earn and rewards. The challenge: a trader has seconds to judge liquidation risk, and the rules behind that risk live in a smart contract.</p>
+    <div class="co">
+      <svg class="co-mark" viewBox="334 499 188 196" role="img" aria-label="LeverX mark"><path fill="#9af84d" d="M334 695 445 499h77zM334 695l153-63 35 63z"/></svg>
+      <div class="co-t">
+        <h2>LeverX</h2>
+        <p class="co-sub">Perpetual DEX on MegaETH</p>
+        <p>A hybrid perpetual DEX with CEX-grade speed, deep liquidity and full self-custody.</p>
+      </div>
+    </div>
+    <dl class="facts">
+      <div><dt>Role</dt><dd>Led UX/UI</dd></div>
+      <div><dt>Length</dt><dd>12-week sprint</dd></div>
+      <div><dt>Designed</dt><dd>190 screens, 55 shown here</dd></div>
+      <div><dt>Worked with</dt><dd>PM, smart-contract engineers</dd></div>
+    </dl>
+    <a class="pill" href="#screens">See the screens <span aria-hidden="true">↓</span></a>
+  </div>
+</section>
+
+<div class="shots gut" data-sc-act="flow">
+  <figure class="s-a" data-sc-reveal="left" data-sc-reveal-at="0.02 0.26"><button class="frame plx" type="button" data-open="581-22794" aria-label="Open Terminal, connected"><img src="img/581-22794.webp?v=3" width="1512" height="982" alt="LeverX terminal with a connected wallet, chart, order book and order form"></button></figure>
+  <figure data-sc-in><button class="frame plx" type="button" data-open="2046-34959" aria-label="Open Portfolio, with positions"><img src="img/2046-34959.webp?v=3" width="1512" height="1026" loading="lazy" alt="Portfolio with total value, margin coverage and positions"></button></figure>
+  <figure data-sc-in><button class="frame plx" type="button" data-open="1167-56039" aria-label="Open Earn overview"><img src="img/1167-56039.webp?v=3" width="1512" height="982" loading="lazy" alt="Earn overview with two protocol products as cards"></button></figure>
+</div>
+
+<section id="problem" class="sec gut" data-sc-act="flow">
+  <p class="sec-l">(Problem Framing)</p>
+  <div class="sec-b">
+    <h2 class="big">How close am I to liquidation?</h2>
+    <p>Every perp trader needs that answer when the market turns, and a wrong read can close a position for good. Major terminals supply the ingredients, but the trader still has to put them together. Key problems:</p>
+    <ul class="dots">
+      <li>The safety figure has a different name on each venue, and it sits beside equity and maintenance margin for the trader to read together.</li>
+      <li>A ratio on its own doesn't say which way is safe, how much room is left in dollars, or what to do next.</li>
+      <li>The rules live in a smart contract. When on-screen words drift from them, traders misjudge what they stand to lose, however clean the screen looks.</li>
+      <li>Traders think "my money is in the account". The protocol splits it into one Cross wallet and one Isolated envelope per market, so idle money can block an order with no visible reason.</li>
+    </ul>
+    <table class="cmp">
+      <thead><tr><th scope="col">Venue</th><th scope="col">Its safety figure</th><th scope="col">Shown with it</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Hyperliquid<a href="https://hyperliquid.gitbook.io/hyperliquid-docs/trading/liquidations" target="_blank" rel="noopener">Docs</a></td>
+          <td>Cross Margin Ratio</td>
+          <td data-h="Shown with it">Account Equity, Maintenance Margin, Liq. Price</td>
+        </tr>
+        <tr>
+          <td>Aster<a href="https://www.asterdex.com/en/trade/pro/futures/BTCUSDT" target="_blank" rel="noopener">Terminal</a></td>
+          <td>Account Margin Ratio</td>
+          <td data-h="Shown with it">Account Equity, Account Maintenance Margin, Liq.Price</td>
+        </tr>
+        <tr>
+          <td>Bitget<a href="https://www.bitget.com/futures/usdt/BTCUSDT" target="_blank" rel="noopener">Terminal</a></td>
+          <td>Maintenance margin rate (MMR)</td>
+          <td data-h="Shown with it">Maintenance margin, Position tier guide</td>
+        </tr>
+        <tr>
+          <td>edgeX<a href="https://edgex-1.gitbook.io/edgex-documentation/trading/liquidation-logic" target="_blank" rel="noopener">Docs</a></td>
+          <td>Risk Rate</td>
+          <td data-h="Shown with it">Total Equity, Maintenance Margin, Liq. Price</td>
+        </tr>
+        <tr>
+          <td>Lighter<a href="https://docs.lighter.xyz/trading/liquidations-and-llp-insurance-fund" target="_blank" rel="noopener">Docs</a></td>
+          <td>None visible before connecting</td>
+          <td data-h="Shown with it">Est. Liq. Price, Position Margin. Its docs use three margin requirements.</td>
+        </tr>
+        <tr class="ours">
+          <td>LeverX design</td>
+          <td>Margin coverage, in words: "Liquidation at 1.00, higher is safer"</td>
+          <td data-h="Shown with it"><b>How far:</b> $17,988.69 before liquidation. <b>What next:</b> add collateral or close positions.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="cmp-note">Labels read from each public terminal on 5 November 2026 with no open position, so warnings that only appear on a live position were not seen. Hyperliquid's docs also call its liquidation price an estimate that funding and other positions can move. LeverX figures are design sample data.</p>
+    <p class="thesis">The design job was to keep one name, say in words which way is safe, and turn the ratio into a dollar buffer and one next step.</p>
+  </div>
+</section>
+
+<section id="role" class="sec gut" data-sc-act="flow">
+  <p class="sec-l">(Role &amp; Team)</p>
+  <div class="sec-b">
+    <h2 class="big">What I owned</h2>
+    <p>I led UX/UI for LeverX during a 12-week sprint, working with the PM and smart-contract engineers. Flows, states and draft copy were mine. The PM approved final text and the engineers confirmed contract logic. My scope covered:</p>
+    <ul class="dots">
+      <li>Turning protocol documentation and PM-approved specs into flows and screens</li>
+      <li>End-to-end UX: connect, order entry, positions, account, onboarding, portfolio, earn and rewards</li>
+      <li>Copy checked against the contract, with unconfirmed points batched into questions for the PM and engineers</li>
+      <li>Interactive HTML prototypes for complex flows such as TP/SL and margin health</li>
+      <li>Figma handoff with plain-language notes for developers and QA</li>
+    </ul>
+  </div>
+</section>
+
+<div class="wall" id="wall" aria-hidden="true">
+  <div class="w-tilt" id="wTilt"></div>
+</div>
+<p class="w-cap gut">55 of the 190 product screens are in this case study. <a href="#screens">Browse them all</a></p>
+
+<section id="approach" class="sec gut" data-sc-act="flow">
+  <p class="sec-l">(Approach)</p>
+  <div class="sec-b">
+    <h2 class="big">Strategy: the contract first, then the trader's question</h2>
+    <p>A screen had to be true to the protocol first and readable under pressure second. So the work ran in this order, and nothing unconfirmed was guessed:</p>
+    <ol class="ledger" id="ledger">
+      <li><h3>Specs first</h3><p>Every screen started from the protocol documentation and specs approved by the PM, so the numbers and rules on screen match how the exchange works.</p></li>
+      <li><h3>Questions batched</h3><p>When something was unconfirmed, it went into a batched question list for the PM and engineers.</p></li>
+      <li><h3>Benchmarks</h3><p>edgeX, Hyperliquid, Aster, Bitget, Lighter and Drift.</p></li>
+      <li><h3>Prototypes</h3><p>Complex flows such as TP/SL and margin health were prototyped as interactive HTML before they went into Figma.</p></li>
+      <li><h3>Handoff</h3><p>Finalized in Figma with plain-language notes for developers and QA.</p></li>
+    </ol>
+    <div class="qs">
+      <h3 class="sub">Each area starts from what a trader is asking</h3>
+      <ul class="q-list">
+        <li><p class="q">What am I risking before I press Buy?</p><p>The leverage dialog states the max position at that level and warns that a 0.5% move at 150x liquidates. Margin mode explains what each choice means at liquidation.</p><button type="button" data-area="Order entry">6 screens</button></li>
+        <li><p class="q">Can I change this without starting over?</p><p>One Edit popover for price and amount, signed once. Adjust margin shows the new liquidation price before you confirm.</p><button type="button" data-area="Positions">11 screens</button></li>
+        <li><p class="q">I made a profit. Why can't I withdraw it?</p><p>A reminder names the unsettled amount. The Settle dialog says where profit is paid from and that the position stays open either way.</p><button type="button" data-area="Portfolio">9 screens</button></li>
+        <li><p class="q">Where does this yield come from, and what can I lose?</p><p>Each card names its source: revenue share plus trading results for LXPO, protocol revenue for the Insurance Fund. Cooldowns sit on the card, and yields are labelled variable and not guaranteed.</p><button type="button" data-area="Earn">9 screens</button></li>
+        <li><p class="q">Why did I get these points?</p><p>The bonus dialog shows the formula and each multiplier: tier, streak and maker share. The streak rule sits beside it: missing a day resets it to ×1.00.</p><button type="button" data-area="Rewards">3 screens</button></li>
+        <li><p class="q">What do I do first?</p><p>A tour highlights whole sections, then five quests unlock one by one, from first deposit to Risk Manager.</p><button type="button" data-area="Onboarding">5 screens</button></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="challenges" class="sec gut" data-sc-act="flow">
+  <p class="sec-l">(Challenges)</p>
+  <div class="sec-b">
+    <h2 class="big">What made this hard</h2>
+    <p>The hardest problems came from the gap between how traders think and how the contract works. Here are three, with what I weighed and what each one cost. Team names and contract internals are left out.</p>
+
+    <article class="case">
+      <div class="case-head"><h3>Idle money a trader can't see</h3><span class="label">Proposal, waiting on contract answers</span></div>
+      <p>Traders think "my money is in the account". The protocol splits it into one Cross wallet and one Isolated envelope per market. Money left in an envelope can block a Cross order and shrink what looks withdrawable, with no visible reason.</p>
+      <table class="cmp opt">
+        <thead><tr><th scope="col">Choice</th><th scope="col">First proposal</th><th scope="col">What I proposed</th><th scope="col">Why</th></tr></thead>
+        <tbody>
+          <tr><td>Placement</td><td data-h="First proposal">Banner across the order area</td><td data-h="What I proposed">One line under the Margin button</td><td data-h="Why">Close to the decision. A wide banner gets skimmed like an ad.</td></tr>
+          <tr><td>Tone</td><td data-h="First proposal">Yellow warning with a triangle</td><td data-h="What I proposed">Neutral, with an info icon</td><td data-h="Why">The money isn't lost, and a warning overstates the risk.</td></tr>
+          <tr><td>Action</td><td data-h="First proposal">Solid lime "Return to Cross"</td><td data-h="What I proposed">Outline "Move to Cross"</td><td data-h="Why">Lime stays on one action per screen. The verb matches the Transfer dialog.</td></tr>
+          <tr><td>Copy</td><td data-h="First proposal">"is sitting in SOL-USD isolated margin with no position or order"</td><td data-h="What I proposed">"3.81 USDM is idle in SOL-USDM Isolated."</td><td data-h="Why">Fits the narrow panel and drops system language.</td></tr>
+        </tbody>
+      </table>
+      <p><b>Trade-off.</b> Switching to Isolated automatically surfaces the money but takes control away. So the mode never changes once someone has typed a size or picked a mode, and the line explains why it switched. If the contract can't hold Cross and Isolated together in one market, the planned default-on checkbox becomes a false choice, so the design falls back to a fixed line.</p>
+    </article>
+
+    <article class="case">
+      <div class="case-head"><h3>When the copy was wrong, not the UI</h3><span class="label">In Figma</span></div>
+      <p>Two descriptions disagreed with the contract. A trader reading them would misjudge what they stood to lose, however clean the screen looked.</p>
+      <table class="cmp opt">
+        <thead><tr><th scope="col">Where</th><th scope="col">It said</th><th scope="col">It now says</th><th scope="col">Why</th></tr></thead>
+        <tbody>
+          <tr><td>Isolated margin</td><td data-h="It said">"won't affect your other positions or account balance"</td><td data-h="It now says">"you can't open new positions or withdraw until you add margin"</td><td data-h="Why">A shortfall blocks more than the one position.</td></tr>
+          <tr><td>LXPO yield</td><td data-h="It said">"Fees + AMM PnL"</td><td data-h="It now says">"Revenue share + trading results"</td><td data-h="Why">The pool does not take the other side of every trade.</td></tr>
+        </tbody>
+      </table>
+      <p><b>How.</b> I batched coded questions for the engineer, drafted text for the PM to approve, and kept a list of old phrases to scan the file for. The Earn labels alone sat in about 60 places. <b>Trade-off.</b> The accurate Isolated text is longer, so the dialog grew to fit it.</p>
+    </article>
+
+    <article class="case">
+      <div class="case-head"><h3>One trigger price, one name</h3><span class="label">Tables in Figma, selector open</span></div>
+      <p>Trigger cells were written four different ways, and some named the wrong price: triggers run on Index, not Mark. Reading an order should not depend on which table it sits in.</p>
+      <p><b>Decision.</b> One format everywhere, <span class="data">Index ≥ 80,500.0</span>, changed in the shared components first so every copy follows. <b>Still open.</b> The Last and Mark selector in TP/SL waits on a product decision: if the contract only supports Index, it should go.</p>
+    </article>
+  </div>
+</section>
+
+<div id="solutions">
+
+<section class="sec gut" data-sc-act="flow">
+  <p class="sec-l">(Solutions)</p>
+  <div class="sec-b">
+    <h2 class="big">A terminal that answers before the trader has to ask</h2>
+    <p>The design rests on three principles. The first two are live below: move the slider, keep scrolling, and the page runs on your choice. Nothing here touches a wallet.</p>
+    <ol class="prin">
+      <li><span><b>Explain risk where it's taken.</b> Leverage, margin mode and TP/SL state their consequence inside the form, at the moment someone commits.</span></li>
+      <li><span><b>One safety number, in words, with one next step.</b> Margin coverage keeps its name everywhere, says which way is safe, and ends in a single action.</span></li>
+      <li><span><b>One decision at a time.</b> Each surface removes the thing a trader is stuck on, so a dense terminal still has an obvious next move.</span></li>
+    </ol>
+  </div>
+</section>
+
+<section id="ticket" class="ticket gut" data-sc-act="flow">
+  <header class="act-head">
+    <span class="label">Principle 1</span>
+    <h2>Set your leverage. The page keeps it.</h2>
+    <p>Leverage is chosen here, before the position exists, so the form has to explain the risk at the moment someone takes it. Move the slider, then keep scrolling.</p>
+  </header>
+  <div class="ticket-grid">
+    <div>
+      <div class="seg" id="tSeg" role="group" aria-label="Order entry screens"></div>
+      <button class="frame" type="button" id="tFrame" data-open="744-26355"><img id="tImg" src="img/744-26355.webp?v=3" width="1512" height="982" loading="lazy" alt="Margin mode dialog"></button>
+      <p id="tNote"></p>
+    </div>
+    <div class="form">
+      <div class="lev-top"><label for="lev">Leverage, sample long</label><output id="levOut" for="lev">10x</output></div>
+      <div>
+        <input id="lev" type="range" min="1" max="150" step="1" value="10" aria-valuetext="10 times">
+        <div class="ticks data" aria-hidden="true"><span>1x</span><span>50x</span><span>100x</span><span>150x</span></div>
+      </div>
+      <dl class="kv">
+        <div><dt>Size</dt><dd>0.8000 BTC</dd></div>
+        <div><dt>Entry</dt><dd>62,641.20</dd></div>
+        <div><dt>Initial margin</dt><dd id="kMargin"></dd></div>
+        <div><dt>Est. liq. price</dt><dd id="kLiq"></dd></div>
+        <div><dt>Move to liquidation</dt><dd id="kMove"></dd></div>
+      </dl>
+      <p class="warnline" id="levWarn" aria-live="polite"></p>
+      <p class="fine">Demo only. No wallet, no funds, no orders. Coverage uses R = Equity ÷ MMR from the LeverX design with sample margins, so these figures are a simplified illustration and not LeverX's margin engine or trading advice.</p>
+    </div>
+  </div>
+</section>
+
+<section class="quiet gut" data-sc-act="flow" aria-label="Position opened">
+  <span class="label" data-sc-in>Principle 2</span>
+  <p data-sc-in><b>Position open.</b>Now the market moves.</p>
+</section>
+
+<section id="margin" class="peak" data-sc-act="pin" data-sc-span="4.6">
+  <div data-sc-stage class="p-stage" id="pStage" data-sc-verify-state="">
+    <div class="p-left">
+      <h2>Margin coverage, sample BTCUSD long <span id="pLev">10x</span></h2>
+      <output class="p-num" id="pR">2.40</output>
+      <p class="p-state" id="pState">Normal. Nothing to do.</p>
+      <p class="p-note" id="pNote" tabindex="-1"></p>
+      <button class="p-add" id="pAdd" type="button" disabled>Add collateral</button>
+      <dl class="p-kv data">
+        <div>Mark <b id="pMark"></b></div>
+        <div>Move <b id="pMove"></b></div>
+        <div>Buffer <b id="pBuf"></b></div>
+      </dl>
+      <p class="p-demo">Demo data. Nothing here is real money.</p>
+    </div>
+    <div class="p-right">
+      <div class="p-frame" id="pFrame">
+        <img class="on" data-z="2046-34959" src="img/2046-34959.webp?v=3" width="1512" height="1026" alt="Portfolio with positions, margin coverage 2.37">
+        <img data-z="2153-90154" src="img/2153-90154.webp?v=3" width="1512" height="982" alt="Margin coverage explained, with normal, warning and liquidation states">
+        <img data-z="2054-86078" src="img/2054-86078.webp?v=3" width="1512" height="976" alt="Liquidation warning, coverage in red with an Add collateral action">
+        <img data-z="2054-86079" src="img/2054-86079.webp?v=3" width="1512" height="982" alt="Add collateral dialog with the minimum amount to leave Caution">
+      </div>
+      <svg class="p-chart" id="pChart" viewBox="0 0 800 84" preserveAspectRatio="none" role="img" aria-label="Coverage falling from 2.40 toward the 1.00 liquidation line">
+        <line x1="0" x2="800" y1="29" y2="29" stroke="currentColor" stroke-opacity=".35" stroke-dasharray="4 5" vector-effect="non-scaling-stroke"/>
+        <line x1="0" x2="800" y1="70" y2="70" stroke="currentColor" stroke-opacity=".6" stroke-dasharray="4 5" vector-effect="non-scaling-stroke"/>
+        <polyline id="pLine" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<div id="terminal" class="terminal gut">
+  <header class="act-head">
+    <span class="label">Principle 3</span>
+    <h2>One decision at a time, across the terminal.</h2>
+    <p>Each screen below starts from what a trader is stuck on, then shows the decision that removes it.</p>
+  </header>
+  <section class="t-row" data-sc-act="flow">
+    <figure data-sc-reveal="left" data-sc-reveal-at="0.1 0.44"><button class="frame" type="button" data-open="2741-103320" aria-label="Open Onboarding quests"><img src="img/2741-103320.webp?v=3" width="1512" height="982" loading="lazy" alt="Terminal with a floating onboarding quest list"></button></figure>
+    <div class="t-note"><h3>Onboarding quests</h3><div class="pd"><div><span class="label">Problem</span><p>A terminal shows the whole market at once. A first-time trader sees everything and no obvious first step.</p></div><div><span class="label d">Decision</span><p>A floating list of five quests, each unlocked by the last: deposit, first trade, maker order, hold a position, manage risk.</p></div></div></div>
+  </section>
+  <section class="t-row" data-sc-act="flow">
+    <figure data-sc-reveal="left" data-sc-reveal-at="0.1 0.44"><button class="frame" type="button" data-open="660-30524" aria-label="Open Market selector"><img src="img/660-30524.webp?v=3" width="1512" height="982" loading="lazy" alt="Searchable market selector with filters and market statistics"></button></figure>
+    <div class="t-note"><h3>Market selector</h3><div class="pd"><div><span class="label">Problem</span><p>Choosing a market takes more than a price, and hopping between markets to compare them loses the thread.</p></div><div><span class="label d">Decision</span><p>One searchable list with Favorite, Top, New, Meme and AI filters, plus price, 24h change, funding, volume and OI side by side.</p></div></div></div>
+  </section>
+  <section class="t-row" data-sc-act="flow">
+    <figure data-sc-reveal="left" data-sc-reveal-at="0.1 0.44"><button class="frame" type="button" data-open="649-16335" aria-label="Open Positions table"><img src="img/649-16335.webp?v=3" width="1512" height="982" loading="lazy" alt="Terminal with the positions table filled in"></button></figure>
+    <div class="t-note"><h3>Positions table</h3><div class="pd"><div><span class="label">Problem</span><p>One market can carry several triggers, and when they scatter across rows the real exposure gets hard to read.</p></div><div><span class="label d">Decision</span><p>One merged row per market, editable current margin, the nearest TP/SL with a +N chip, and Market or Limit close in the row.</p></div></div></div>
+  </section>
+</div>
+
+<section id="brand" class="brand" data-sc-act="pan" data-sc-span="3.2">
+  <div data-sc-stage class="b-stage">
+    <div class="b-rail" id="bRail" data-sc-pan="0.02">
+      <div class="b-lead"><h2>An arm, a fulcrum, a force.</h2><p>The identity behind the product: a mark built from the mechanics of a lever.</p></div>
+      <figure class="b-item"><button class="frame" type="button" data-open="b05" aria-label="Open Mark construction"><img src="brand/b05.webp" width="1600" height="900" loading="lazy" alt="Construction of the LeverX mark from one anchor point"></button><h3>Mark construction</h3><p>Two shapes and one anchor point.</p></figure>
+      <figure class="b-item"><button class="frame" type="button" data-open="b07" aria-label="Open Color palette"><img src="brand/b07.webp" width="1600" height="900" loading="lazy" alt="LeverX color palette"></button><h3>Color palette</h3><p>No gradients, every color has one role.</p></figure>
+      <figure class="b-item"><button class="frame" type="button" data-open="b09" aria-label="Open Typography"><img src="brand/b09.webp" width="1600" height="900" loading="lazy" alt="Space Grotesk specimen in five weights"></button><h3>Typography</h3><p>Space Grotesk in five weights.</p></figure>
+      <figure class="b-item"><button class="frame" type="button" data-open="b13" aria-label="Open Apparel and ID badge"><img src="brand/b13.webp" width="1600" height="900" loading="lazy" alt="The mark on a sweatshirt and a staff badge"></button><h3>Apparel and ID badge</h3><p>The construction grid as a pattern.</p></figure>
+      <figure class="b-item"><button class="frame" type="button" data-open="b17" aria-label="Open Storefront sign"><img src="brand/b17.webp" width="1600" height="900" loading="lazy" alt="Stacked logo on a lit sign against brick"></button><h3>Storefront sign</h3><p>The stacked logo, lit, against brick.</p></figure>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<section id="results" class="sec gut" data-sc-act="flow">
+  <p class="sec-l">(Results &amp; Impact)</p>
+  <div class="sec-b">
+    <h2 class="big">Outcomes</h2>
+    <dl class="nums">
+      <div><dd><span class="num" data-n="190">190</span></dd><dt>screens designed</dt></div>
+      <div><dd><span class="num" data-n="12">12</span></dd><dt>week sprint</dt></div>
+      <div><dd><span class="num" data-n="55">55</span></dd><dt>screens shown here</dt></div>
+    </dl>
+    <ul class="out">
+      <li><span class="tag on">In Figma</span><p>Two descriptions that disagreed with the contract were corrected, including the Isolated margin warning and the LXPO yield label.</p></li>
+      <li><span class="tag on">In Figma</span><p>Trigger cells in the order tables read one way, <span class="data">Index ≥ price</span>, through shared components.</p></li>
+      <li><span class="tag on">In Figma</span><p>Margin coverage has one rule behind every state: one name, a dollar buffer and one next step.</p></li>
+      <li><span class="tag">Proposal</span><p>The idle Isolated money line is designed and waits on contract answers.</p></li>
+      <li><span class="tag">Open</span><p>The Last and Mark selector in TP/SL waits on a product decision.</p></li>
+    </ul>
+    <p class="cmp-note">This case study shows no usage metrics or test results.</p>
+  </div>
+</section>
+
+<div class="bleed gut" data-sc-act="flow">
+  <button class="frame plx" type="button" data-open="b17" aria-label="Open Storefront sign"><img src="brand/b17.webp" width="1600" height="900" loading="lazy" alt="Stacked LeverX logo on a lit sign against brick"></button>
+</div>
+
+<section id="next" class="sec gut" data-sc-act="flow">
+  <p class="sec-l">(Next Step)</p>
+  <div class="sec-b">
+    <p>With the sprint's screens in Figma, the next work is to close the open contract questions, settle the TP/SL selector, then put margin coverage in front of real traders: do they read the state correctly, and do they act in time?</p>
+    <p class="thesis">Next time I'd put the contract questions before the first draft, not after review.</p>
+  </div>
+</section>
+
+<section id="screens" class="index gut" data-sc-act="flow">
+  <header class="act-head">
+    <p class="paren">(All Screens)</p>
+    <h2>Every screen shown here.</h2>
+    <p>55 of the 190 product screens, plus 17 brand slides. Figures inside the screens are design sample data.</p>
+  </header>
+  <div class="ix-tools">
+    <div class="seg" id="ixSeg" role="group" aria-label="Filter by area"></div>
+    <input id="ixSearch" type="search" placeholder="Search screens" aria-label="Search screens">
+  </div>
+  <div class="ix-grid">
+    <div>
+      <ul class="ix-list" id="ixList" tabindex="0" aria-label="Screens"></ul>
+      <button class="btn-b ix-more" id="ixMore" type="button" style="color:var(--ink);border-color:var(--line-2);margin-top:12px"></button>
+    </div>
+    <div class="ix-preview">
+      <button class="frame" type="button" id="ixFrame"><img id="ixImg" alt="" width="1512" height="982" loading="lazy"></button>
+      <h3 id="ixT"></h3>
+      <p id="ixC"></p>
+    </div>
+  </div>
+  <noscript><p>This index needs JavaScript. Duc's website is <a href="https://ducpm.space">ducpm.space</a>.</p></noscript>
+</section>
+
+<section class="more gut" data-sc-act="flow" aria-labelledby="moreH">
+  <div class="more-head"><h2 id="moreH">Next project</h2><a class="pill" href="https://ducpm.space/projects" target="_blank" rel="noopener">See all projects <span aria-hidden="true">↗</span></a></div>
+  <div class="more-grid">
+    <a class="more-card" href="https://ducpm.space/projects/cardmasters" target="_blank" rel="noopener"><span class="label">Interaction Design</span><b>CardMasters</b><span>Opening digital card packs that redeem real physical cards.</span></a>
+    <a class="more-card" href="https://ducpm.space/projects/dtravel" target="_blank" rel="noopener"><span class="label">Product Design</span><b>Dtravel</b><span>Making Dtravel's Web3 vision feel like a product, not a whitepaper.</span></a>
+  </div>
+</section>
+
+<section id="talk" class="close-wrap" data-sc-act="flow">
+  <div class="close gut" data-sc-reveal="left" data-sc-reveal-at="0.02 0.3">
+    <div class="close-in">
+      <div>
+        <h2>Bring Duc the hard screens.</h2>
+        <fieldset class="pick">
+          <legend>I'm here about</legend>
+          <label><input type="radio" name="why" id="whyRole" value="role" checked>A role</label>
+          <label><input type="radio" name="why" id="whyProject" value="project">A freelance project</label>
+        </fieldset>
+        <label for="brief">What are you building?</label>
+        <textarea id="brief" placeholder="A lending protocol with a messy liquidation flow."></textarea>
+      </div>
+      <div class="msg">
+        <h3>Your message</h3>
+        <p id="msgOut"></p>
+        <div class="btns">
+          <a class="btn-a" href="https://www.linkedin.com/in/ducpm1608/" target="_blank" rel="noopener">Talk to Duc</a>
+          <button class="btn-b" id="copyBtn" type="button">Copy message</button>
+        </div>
+        <p class="fine" id="copyNote" aria-live="polite">Nothing is sent from this page. Copy the message, then paste it into LinkedIn.</p>
+      </div>
+    </div>
+    <footer class="credit">
+      <div><b>Duc Pham</b>Digital Product Designer<br><a href="https://ducpm.space" target="_blank" rel="noopener">ducpm.space</a><br><a href="mailto:ducpm1608@gmail.com">ducpm1608@gmail.com</a><br><a href="https://t.me/duckon16" target="_blank" rel="noopener">Telegram</a> · <a href="https://x.com/Ducpm16" target="_blank" rel="noopener">X</a></div>
+      <div>This page is a portfolio piece, not a LeverX product. It connects to no wallet and places no trades.</div>
+      <div>3D laptop: <a href="https://sketchfab.com/3d-models/macbook-pro-m3-16-inch-2024-8e34fc2b303144f78490007d91ff57c4" target="_blank" rel="noopener">MacBook Pro M3 16-inch</a> by jackbaeten, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>, rigged by William Laverty.</div>
+    </footer>
+  </div>
+</section>
+
+</main>
+
+<aside class="strip" aria-label="Sample position, demo only">
+  <div class="strip-in gut data">
+    <span class="demo">Demo, sample data. No wallet, no funds.</span>
+    <span>BTCUSD long <b id="sLev">10x</b></span>
+    <span>Entry <b>62,641.20</b></span>
+    <span>Mark <b id="sMark">62,641.20</b></span>
+    <span>Liq <b id="sLiq"></b></span>
+    <div class="chip"><i></i><b id="sR">2.40</b><b id="sState" class="sstate">Normal</b></div>
+    <nav class="strip-nav" aria-label="Sections">
+      <a href="#summary" data-nav="summary">Summary</a>
+      <a href="#problem" data-nav="problem">Problem</a>
+      <a href="#role" data-nav="role">Role</a>
+      <a href="#approach" data-nav="approach">Approach</a>
+      <a href="#challenges" data-nav="challenges">Challenges</a>
+      <a href="#solutions" data-nav="solutions">Solutions</a>
+      <a href="#results" data-nav="results">Results</a>
+      <a href="#next" data-nav="next">Next</a>
+    </nav>
+  </div>
+</aside>
+
+<dialog class="view" id="view" aria-labelledby="vT">
+  <div class="v-top">
+    <h2 id="vT"></h2>
+    <button type="button" id="vPrev" aria-label="Previous screen">Prev</button>
+    <button type="button" id="vNext" aria-label="Next screen">Next</button>
+    <button type="button" id="vClose">Close</button>
+  </div>
+  <div class="v-body" tabindex="0"><img id="vImg" alt=""></div>
+  <p class="v-note" id="vC"></p>
+</dialog>
+
+<script src="scrollcraft.js"></script>
+<script>
+(() => {
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const rmp = (x, a, b) => clamp((x - a) / (b - a));
+const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const lerp = (a, b, t) => a + (b - a) * t;
+const money = n => n.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const esc = s => s.replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+
+/* ---- screens ---- */
+const S = [
+['1-16076','Terminal','Terminal, before connect','Minimal header with a single Connect wallet CTA. Chart, order book and order form stay visible so people can read the market first.'],
+['649-8902','Terminal','Connect a wallet','Wallet picker (MetaMask, Rainbow, WalletConnect, Base Account) over the terminal.'],
+['581-22794','Terminal','Terminal, connected','Network selector, notification bell and account pill replace the Connect button. The form opens Buy / Long and Sell / Short.'],
+['660-30524','Terminal','Market selector','Searchable market list with Favorite, Top, New, Meme and AI filters plus price, 24h change, funding, volume and OI.'],
+['649-18941','Terminal','Network selector','Switch between MegaETH mainnet and testnet from the header.'],
+['2548-96013','Terminal','Wallet details','Account dropdown: address, Perpetual Account value, Deposit / Withdraw shortcuts, explorer and Disconnect.'],
+['2811-140092','Terminal','Display settings','Fills on chart, up/down color scheme, order-fill toasts and sounds.'],
+['2491-84064','Terminal','Funding rate tooltip','Funding rate and countdown explained in plain words, right on the stat bar.'],
+['2505-91609','Terminal','Margin coverage tooltip','The account safety ratio: liquidation at 1.00, higher is safer.'],
+['649-10979','Order entry','Adjust leverage','Slider from 1x to 150x with max position size per tier and a High Leverage Mode warning.'],
+['744-26355','Order entry','Margin mode','Cross or Isolated per market. Isolated spells out what a margin shortfall blocks: new positions and withdrawals.'],
+['744-27480','Order entry','Slippage','Presets 0.1% / 6% / 12% / Auto or a custom value, with a caution for high settings.'],
+['739-24204','Order entry','TP/SL in the order form','Turn on TP/SL while placing the order and choose the trigger price type for each leg.'],
+['1026-43176','Order entry','TP/SL, entire close','One input per leg with a Price / ROI% / PnL switch. Entire close closes the full position at trigger time.'],
+['1026-46946','Order entry','TP/SL, partial close','Partial close locks a fixed amount. A conversion line shows the trigger price and expected PnL before fees.'],
+['649-16335','Positions','Positions table','One merged row per market, editable current margin, nearest TP/SL with a +N chip, and Market / Limit close.'],
+['926-38927','Positions','Adjust margin','Add or remove margin on an Isolated position and preview the new liquidation price before confirming.'],
+['2115-89897','Positions','Transfer to Cross','Move spare collateral from an Isolated position back to the Cross balance. Size and leverage stay the same.'],
+['594-8879','Positions','Open orders','Limit & Market, Conditional and TP/SL as sub-tabs, with per-order Cancel and Cancel all.'],
+['2527-88496','Positions','Edit a pending order','One Edit button opens a single popover for price and amount, signed once.'],
+['2608-125790','Positions','Conditional orders','The Conditional sub-tab, with every trigger written one way: Index ≥ price.'],
+['660-15531','Positions','Assets','Token balance, margin balance, value and unrealized PnL per asset.'],
+['660-21922','Positions','Order history','Order history with a time filter, hide other symbols, hide cancelled, details and explorer links.'],
+['1221-52998','Positions','Order details','Filled amount, fee, realized profit and update time in one popup.'],
+['660-29281','Positions','Transaction history','Funding fees, commission and realized PnL over time, filtered by type.'],
+['2079-68915','Positions','Filter by time','Two-month date range picker with 1 day / 1 week / 1 month / 3 month presets.'],
+['649-12051','Account','Deposit','Deposit USDM with wallet balance and a Max shortcut.'],
+['649-15264','Account','Withdraw','Withdraw USDM with the withdrawable amount and transaction fee.'],
+['1459-96642','Account','Deposit & withdraw history','Completed, Processing and Failed states with explorer links and pagination.'],
+['1955-90035','Onboarding','Product tour, step 1','A five-step tour that highlights whole sections, starting with the market and stat bar.'],
+['1955-90066','Onboarding','Product tour, step 2','Orders & positions and the six history tabs.'],
+['1955-90045','Onboarding','Product tour, step 4','Placing a Long or Short: leverage, size and Est. Liq. Price.'],
+['2741-103320','Onboarding','Onboarding quests, start','A floating widget with five sequential quests. Each one unlocks the next.'],
+['2760-121155','Onboarding','Onboarding quests, done','5/5 claimed, pointing to Feature Adoption quests in Rewards.'],
+['1955-90077','Portfolio','Portfolio, empty','The full layout with no data yet: total value, summary, tier and history tabs.'],
+['2046-34959','Portfolio','Portfolio, with positions','Total value split into Cross collateral and Isolated margin, margin coverage, equity chart and a settle reminder.'],
+['2153-90154','Portfolio','Margin coverage explained','Normal / Warning / Liquidation states with the R ratio and T threshold formulas.'],
+['2054-86078','Portfolio','Liquidation warning','Coverage turns red, shows the buffer left before liquidation and an Add collateral CTA.'],
+['2054-86079','Portfolio','Add collateral','Deposit USDM with the minimum needed to leave Caution, or close a position instead.'],
+['2057-86887','Portfolio','Settle profit','A plain confirmation that moves unsettled profit into the balance.'],
+['2205-105779','Portfolio','Account tiers','Bronze to Black by 30-day volume, with taker discount, points multiplier and benefits.'],
+['1955-94443','Portfolio','Gold tier','The tier card changes with the level and tracks progress to the next one.'],
+['1955-93132','Portfolio','Deposits & withdrawals','Deposit and withdrawal history inside Portfolio with status and transaction hash.'],
+['1167-56039','Earn','Earn overview','Two protocol products as cards, LXPO and the USDM Insurance Fund, each naming where its yield comes from, with APY, TVL and cooldown.'],
+['2212-91649','Earn','Earn, not joined','The same layout with personal positions at zero.'],
+['1955-97074','Earn','Quick add liquidity','LXPO received, LXPO price and estimated yearly earnings at the current APY.'],
+['1955-97112','Earn','Quick stake','Stake into the Insurance Fund with minimum received and a note that stake value can decrease.'],
+['1955-97272','Earn','LXPO, add liquidity','Pool detail: your position, TVL and LXPO price chart, activity and the Add panel.'],
+['2250-107798','Earn','LXPO, remove liquidity','Remove panel with redeem fee and the amount left in the pool. The header says the LXPO price can rise or fall.'],
+['2286-114270','Earn','Insurance Fund, request unstake','Request unstake with the unlock time and the amount left staked.'],
+['2286-115933','Earn','Insurance Fund, claim','Cooldown over: claim now or cancel to keep it staked. Activity shows the Cooldown state.'],
+['2274-111700','Earn','Stake confirmed','A confirmation toast and the new entry in Your Activity.'],
+['2889-146647','Rewards','Rewards Center','Season points split into trading and quest points, trading bonus, daily streak and claimable quests.'],
+['2905-106518','Rewards','Trading bonus breakdown','Points per trade and how tier, streak and maker share multiply into the total.'],
+['2908-112942','Rewards','Point history','Points by day, by source and with the streak multiplier.'],
+['b02','Brand','Contents','Eight chapters: logos, typography, color, photography, grid, digital, print and application.'],
+['b03','Brand','Brand statement','A hybrid perpetual DEX with CEX-grade speed, deep liquidity and full self-custody.'],
+['b04','Brand','Logo design','The mark encodes a lever: the L is the arm, the triangle is the fulcrum, the gap between them reads as an X.'],
+['b05','Brand','Mark construction','Two shapes and one anchor point. Every angle radiates from the bottom-left vertex.'],
+['b06','Brand','Horizontal logo','The primary lockup on its construction grid, mark left and wordmark right.'],
+['b07','Brand','Color palette','Tennis Ball lime, Tennis Whites, Astro Turf and Pitch. No gradients, every color has one role.'],
+['b08','Brand','Logo usage','Three approved color configurations for light, lime and dark backgrounds.'],
+['b09','Brand','Typography','Space Grotesk in five weights, from interface labels to display headlines.'],
+['b10','Brand','Iconography','Phosphor for product UI, Untitled UI for marketing surfaces, sharing one optical weight.'],
+['b11','Brand','App icon','The mark as a 3D app icon with a notification badge.'],
+['b12','Brand','Business card','Lime mark and wordmark on a matte black card.'],
+['b13','Brand','Apparel and ID badge','The mark on a sweatshirt with the construction grid as a pattern, and a staff badge.'],
+['b14','Brand','Home screen','The app icon in context on a phone home screen.'],
+['b15','Brand','Laptop splash','The horizontal logo on a full lime screen.'],
+['b16','Brand','Dock, browser and social','The icon across the dock, a browser tab and a social post.'],
+['b17','Brand','Storefront sign','The stacked logo on a lit sign against brick.'],
+['b18','Brand','Conference screen','The identity at event scale, on a stage screen.'],
+].map(([id, a, t, c]) => ({id, a, t, c, src: id[0] === 'b' ? `brand/${id}.webp` : `img/${id}.webp?v=3`}));
+const byId = Object.fromEntries(S.map(s => [s.id, s]));
+
+/* ---- sample position ---- */
+const ENTRY = 62641.2, SIZE = 0.8, NOTIONAL = ENTRY * SIZE, R0 = 2.4, T = 2;
+let lev = 10, shownR = R0, rescued = false, closed = false;
+const liqPrice = l => ENTRY * (1 - (R0 - 1) / (2 * l));
+const markAt = R => ENTRY * (1 - (R0 - R) / (2 * lev));
+const moveAt = R => (R0 - R) / (2 * lev) * 100;
+const mmr = () => NOTIONAL * .5 / lev;
+
+function setLev(l) {
+  lev = l;
+  $('#levOut').textContent = l + 'x';
+  const r = $('#lev'); r.setAttribute('aria-valuetext', l + ' times'); r.style.setProperty('--pct', ((l - 1) / 149 * 100) + '%');
+  $('#kMargin').textContent = money(NOTIONAL / l) + ' USDM';
+  $('#kLiq').textContent = money(liqPrice(l));
+  $('#kMove').textContent = moveAt(1).toFixed(2) + '%';
+  $('#levWarn').textContent = l >= 50 ? `High leverage. A ${moveAt(1).toFixed(2)}% move against this sample liquidates it.` : '';
+  $('#pLev').textContent = $('#sLev').textContent = l + 'x';
+  $('#sLiq').textContent = money(liqPrice(l));
+}
+$('#lev').addEventListener('input', e => setLev(+e.target.value));
+
+/* order entry tabs */
+const TABS = [['744-26355', 'Margin mode'], ['744-27480', 'Slippage'], ['1026-43176', 'TP/SL, entire close'], ['1026-46946', 'TP/SL, partial close']];
+const PROBLEMS = {
+  '744-26355': 'Cross and Isolated sound alike until a liquidation shows how differently they behave.',
+  '744-27480': 'A high slippage setting can cost real money, yet it looks like any other number in a form.',
+  '1026-43176': 'Traders think in price, ROI or PnL, and converting between them in their head is where mistakes start.',
+  '1026-46946': 'Closing only part of a position makes the outcome much harder to predict before it triggers.',
+};
+function showTab(id) {
+  const s = byId[id]; $('#tImg').src = s.src; $('#tImg').alt = s.t; $('#tFrame').dataset.open = id; $('#tFrame').setAttribute('aria-label', 'Open ' + s.t);
+  $('#tNote').innerHTML = `<span class="pd"><span style="display:grid;gap:2px"><span class="label">Problem</span><span>${esc(PROBLEMS[id])}</span></span><span style="display:grid;gap:2px"><span class="label d">Decision</span><span>${esc(s.c)}</span></span></span>`;
+  $$('#tSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === id));
+}
+$('#tSeg').innerHTML = TABS.map(([id, t]) => `<button type="button" data-id="${id}" aria-pressed="false">${esc(t)}</button>`).join('');
+$('#tSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) showTab(b.dataset.id); });
+showTab(TABS[0][0]);
+
+/* ---- viewer ---- */
+const view = $('#view'), opened = new Set(); let vList = S, vI = 0;
+function vShow(i) {
+  vI = (i + vList.length) % vList.length; const s = vList[vI]; const im = $('#vImg');
+  im.src = s.src; im.alt = s.t; $('#vT').textContent = s.a + ': ' + s.t; $('#vC').textContent = s.c;
+  $('.v-body').scrollTop = 0; opened.add(s.t); writeMsg();
+}
+function vOpen(id, list = S) { vList = list.some(s => s.id === id) ? list : S; vShow(vList.findIndex(s => s.id === id)); view.showModal(); }
+$('#vClose').onclick = () => view.close();
+$('#vPrev').onclick = () => vShow(vI - 1);
+$('#vNext').onclick = () => vShow(vI + 1);
+view.addEventListener('keydown', e => { if (e.key === 'ArrowRight') vShow(vI + 1); if (e.key === 'ArrowLeft') vShow(vI - 1); });
+document.addEventListener('click', e => { const b = e.target.closest('[data-open]'); if (b) vOpen(b.dataset.open); });
+
+/* ---- index ---- */
+const AREAS = ['All', ...new Set(S.map(s => s.a))];
+let ixArea = 'All', ixQ = '', ixAll = false, ixCur = null, ixRows = [];
+$('#ixSeg').innerHTML = AREAS.map(a => `<button type="button" data-a="${a}" aria-pressed="${a === 'All'}">${esc(a)}<span>${a === 'All' ? S.length : S.filter(s => s.a === a).length}</span></button>`).join('');
+const narrow = matchMedia('(max-width:980px)');
+function ixPreview(s) {
+  if (!s) return; ixCur = s.id;
+  const im = $('#ixImg'); if (!narrow.matches && im.getAttribute('src') !== s.src) { im.src = s.src; im.alt = s.t; }
+  $('#ixFrame').dataset.open = s.id; $('#ixFrame').setAttribute('aria-label', 'Open ' + s.t);
+  $('#ixT').textContent = s.t; $('#ixC').textContent = s.c;
+  $$('#ixList button').forEach(b => b.dataset.on = b.dataset.id === s.id);
+}
+function ixDraw() {
+  const q = ixQ.trim().toLowerCase();
+  ixRows = S.filter(s => (ixArea === 'All' || s.a === ixArea) && (!q || (s.t + ' ' + s.c + ' ' + s.a).toLowerCase().includes(q)));
+  const lim = narrow.matches && !ixAll ? 12 : Infinity, rows = ixRows.slice(0, lim);
+  $('#ixList').innerHTML = rows.length ? rows.map(s => `<li><button type="button" data-id="${s.id}" data-on="false"><span class="ix-a data">${esc(s.a)}</span><span class="ix-t">${esc(s.t)}</span></button></li>`).join('') : `<li class="ix-empty">No screens match "${esc(ixQ)}". Try another word or pick All.</li>`;
+  const more = $('#ixMore'); more.hidden = ixRows.length <= rows.length; more.textContent = `Show all ${ixRows.length}`;
+  if (rows.length) ixPreview(rows.find(s => s.id === ixCur) || rows[0]);
+}
+$('#ixSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; ixArea = b.dataset.a; ixAll = false; $$('#ixSeg button').forEach(x => x.setAttribute('aria-pressed', x === b)); ixDraw(); });
+$('#ixSearch').addEventListener('input', e => { ixQ = e.target.value; ixDraw(); });
+$('#ixMore').addEventListener('click', () => { ixAll = true; ixDraw(); });
+$('.q-list').addEventListener('click', e => {
+  const b = e.target.closest('[data-area]'); if (!b) return;
+  ixArea = b.dataset.area; ixQ = ''; $('#ixSearch').value = ''; ixAll = false; ixCur = null;
+  $$('#ixSeg button').forEach(x => x.setAttribute('aria-pressed', x.dataset.a === ixArea));
+  ixDraw();
+  $('#screens').scrollIntoView({behavior: reduce ? 'auto' : 'smooth'});
+});
+const ixHit = e => e.target.closest('#ixList button');
+$('#ixList').addEventListener('pointerover', e => { const b = ixHit(e); if (b && e.pointerType === 'mouse') ixPreview(byId[b.dataset.id]); });
+$('#ixList').addEventListener('focusin', e => { const b = ixHit(e); if (b) ixPreview(byId[b.dataset.id]); });
+$('#ixList').addEventListener('click', e => { const b = ixHit(e); if (b) vOpen(b.dataset.id, ixRows); });
+ixDraw();
+
+/* ---- close: the message is the visitor's own ---- */
+function writeMsg() {
+  const role = $('#whyRole').checked, brief = $('#brief').value.trim(), seen = [...opened].slice(-3);
+  const lines = [`Hi Duc, I went through your LeverX case study.`, role ? `I'm hiring for a product design role.` : `I have a freelance project in mind.`];
+  if (brief) lines.push(`We're building: ${brief}`);
+  if (seen.length) lines.push(`Screens that stood out: ${seen.join(', ')}.`);
+  if (closed && !rescued) lines.push(`Also, your page liquidated me at ${lev}x.`);
+  else if (rescued) lines.push(`Also, I saved my ${lev}x position with Add collateral.`);
+  $('#msgOut').textContent = lines.join('\n');
+}
+['whyRole', 'whyProject', 'brief'].forEach(id => $('#' + id).addEventListener('input', writeMsg));
+$('#copyBtn').addEventListener('click', async () => {
+  const note = $('#copyNote'), txt = $('#msgOut').textContent;
+  try { await navigator.clipboard.writeText(txt); note.textContent = 'Copied. Paste it into LinkedIn when you open Duc\'s profile.'; }
+  catch { const r = document.createRange(); r.selectNodeContents($('#msgOut')); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); note.textContent = 'Your browser blocked copying. The message is selected, so copy it with your keyboard.'; }
+});
+
+/* ---- margin call: scroll is the price, the page is the account ---- */
+const peak = $('#margin'), pStage = $('#pStage'), hero = $('#top'), hStage = $('#hStage');
+const pImgs = Object.fromEntries($$('#pFrame img').map(i => [i.dataset.z, i]));
+let curImg = '2046-34959', curPhase = '';
+const ZOOM = {
+  '2046-34959': [15, 40], '2153-90154': [52, 52], '2054-86078': [14, 46], '2054-86079': [75, 62],
+};
+function showImg(id, z) {
+  if (id !== curImg) { pImgs[curImg].classList.remove('on'); pImgs[id].classList.add('on'); curImg = id; }
+  const im = pImgs[id], [ox, oy] = ZOOM[id]; im.style.setProperty('--ox', ox + '%'); im.style.setProperty('--oy', oy + '%');
+  im.style.setProperty('--z', reduce ? 1 : z.toFixed(3));
+}
+// Coverage across the pin. Falls with a little market noise, then holds just above 1.00.
+const noise = p => Math.sin(p * 37) * .03 + Math.sin(p * 91) * .012;
+const HOLD = .6, END = .9;
+function rAt(p) {
+  if (p >= HOLD) return p < END ? 1.04 : lerp(1.04, .97, rmp(p, END, .95));
+  const t = p / HOLD;
+  return Math.max(1.04, lerp(R0, 1.04, ease(t) * .55 + t * .45) + noise(p) * (1 - t) * (t > .02 ? 1 : 0));
+}
+const chartY = R => 70 - (R - 1) * 41;
+const pts = []; for (let i = 0; i <= 120; i++) { const p = i / 120 * HOLD * 1.5; pts.push([p, rAt(Math.min(p, .95))]); }
+function drawChart(p, liveR) {
+  const out = []; for (const [q, R] of pts) { if (q > p) break; out.push(`${(q / (HOLD * 1.5) * 800).toFixed(1)},${chartY(R).toFixed(1)}`); }
+  out.push(`${(Math.min(p / (HOLD * 1.5), 1) * 800).toFixed(1)},${chartY(liveR).toFixed(1)}`);
+  $('#pLine').setAttribute('points', out.join(' '));
+}
+function setPhase(ph, state, note) {
+  if (ph === curPhase) return; curPhase = ph;
+  $('#pState').textContent = state; $('#pNote').textContent = note;
+}
+function statusText(R) {
+  $('#sR').textContent = $('#pR').textContent = R.toFixed(2);
+  $('#sMark').textContent = $('#pMark').textContent = money(markAt(Math.min(R, R0)));
+  $('#pMove').textContent = '-' + moveAt(Math.min(R, R0)).toFixed(2) + '%';
+  $('#pBuf').textContent = money(Math.max(0, (R - 1) * mmr())) + ' USDM';
+}
+$('#pAdd').addEventListener('click', () => { rescued = true; $('#pNote').focus({preventScroll: true}); $('#pAdd').disabled = true; writeMsg(); });
+
+function updatePeak(p) {
+  const root = document.documentElement;
+  if (p < .4) rescued = false;
+  let R = rescued ? R0 : rAt(p);
+  closed = p >= .95;
+  // Glide to the target so a rescue reads as a recovery and not a jump.
+  shownR = reduce ? R : lerp(shownR, R, .14);
+  if (Math.abs(shownR - R) < .004) shownR = R;
+  const vR = shownR;
+  statusText(vR);
+  const inPin = p > 0 && p < 1;
+  const flood = !rescued && vR < 1.49 && (inPin || p === 1 && false);
+  pStage.classList.toggle('flood', flood);
+  let state = 'normal', chip = 'Normal';
+  if (!rescued && p > 0) {
+    if (vR < 1.49) { state = 'danger'; chip = vR < 1 ? 'Liquidation' : 'Warning'; }
+    else if (vR < T) { state = 'warn'; chip = 'Warning'; }
+  }
+  if (p >= 1 && !rescued) { state = 'normal'; chip = 'Closed, demo'; }
+  if (p <= 0) { state = 'normal'; chip = 'Normal'; }
+  if (root.dataset.state !== state) root.dataset.state = state;
+  $('#sState').textContent = chip;
+
+  const add = $('#pAdd');
+  if (rescued) {
+    showImg('2054-86079', 1.5);
+    setPhase('rescued', 'Back to Normal.', 'The dialog states the minimum needed to leave Caution before anything is signed. Closing a position is the other way out.');
+  } else if (p >= END + .03) {
+    showImg('2054-86078', 1.9);
+    setPhase('liq', 'Liquidation. Positions start closing.', 'Nothing was added, so this demo position closed. Scroll back up to try again.');
+    add.disabled = true;
+  } else if (p >= HOLD) {
+    showImg('2054-86078', 1.9);
+    setPhase('hold' + lev, 'Warning. The buffer is almost gone.', `At your ${lev}x, that took a ${moveAt(1.04).toFixed(2)}% move. At 150x it takes ${((R0 - 1.04) / 300 * 100).toFixed(2)}%.`);
+    add.disabled = false;
+  } else if (vR < 1.49) {
+    showImg('2054-86078', lerp(1.2, 1.9, rmp(vR, 1.49, 1.06)));
+    setPhase('danger', 'Warning. Coverage turns red.', 'The card shows the buffer left before liquidation and gives one action: Add collateral.');
+    add.disabled = true;
+  } else if (vR < T) {
+    showImg('2153-90154', lerp(1.04, 1.32, rmp(vR, T, 1.49)));
+    setPhase('warn', 'Warning. Add collateral or close positions.', 'States come from one rule: R = Equity ÷ MMR, against T = ΣIMR ÷ ΣMMR. Every color here follows it.');
+    add.disabled = true;
+  } else {
+    showImg('2046-34959', lerp(1, 1.42, rmp(vR, R0, T)));
+    setPhase('normal', 'Normal. Nothing to do.', 'Portfolio splits total value into Cross collateral and Isolated margin, with coverage right under it.');
+    add.disabled = true;
+  }
+  drawChart(p, vR);
+  pStage.dataset.scVerifyState = vR.toFixed(2) + '|' + curImg + '|' + curPhase;
+}
+
+/* ---- threshold ---- */
+const body = document.body, hLap = $('#hLaptop'), mbLid = $('.mb-lid');
+window.__hero = {open: 0, dive: 0, bright: 0, aim: 0};
+function updateHero(p) {
+  const open = reduce ? 1 : ease(rmp(p, .02, .36));
+  const dive = reduce ? 0 : ease(rmp(p, .36, .88));
+  const fin = reduce ? 0 : rmp(p, .88, .95);
+  hStage.style.setProperty('--hp', p.toFixed(4));
+  hStage.style.setProperty('--fade', rmp(p, .46, .78).toFixed(3));
+  hStage.style.setProperty('--final', fin.toFixed(3));
+  hLap.style.setProperty('--dive', dive.toFixed(4));
+  if (!reduce) mbLid.style.setProperty('--lid', ((1 - open) * -78).toFixed(2) + 'deg');
+  window.__hero = {open, dive, bright: reduce ? 1 : ease(rmp(p, .08, .32))};
+  window.dispatchEvent(new Event('heroprogress'));
+  hStage.dataset.scVerifyState = open.toFixed(2) + '|' + dive.toFixed(2) + '|' + fin.toFixed(2);
+}
+if (matchMedia('(hover:hover) and (pointer:fine)').matches && !reduce) {
+  addEventListener('pointermove', e => { hStage.style.setProperty('--mx', ((e.clientX / innerWidth - .5) * 2).toFixed(3)); hStage.style.setProperty('--my', ((e.clientY / innerHeight - .5) * 2).toFixed(3)); }, {passive: true});
+}
+if (reduce) {
+  hero.dataset.scAct = 'flow'; hero.removeAttribute('data-sc-span');
+  $('#hCopy').removeAttribute('data-sc-cue');
+  $('#hFinal').hidden = true;
+}
+
+function pinP(el) { const r = el.getBoundingClientRect(), t = r.height - innerHeight; return t > 1 ? clamp(-r.top / t) : (r.top <= 0 ? 1 : 0); }
+/* ---- case-study scroll effects ---- */
+const inView = el => { const r = el.getBoundingClientRect(); return clamp((innerHeight - r.top) / (innerHeight + r.height)); };
+const wallRows = [
+  ['581-22794', '2046-34959', '660-30524', '1167-56039', '744-26355', '2889-146647', '649-12051', '2205-105779'],
+  ['2054-86078', '1955-97272', '2741-103320', '2153-90154', '649-16335', '2908-112942', '660-29281', '2286-115933'],
+  ['2905-106518', '1955-90077', '2250-107798', '926-38927', '1955-94443', '2527-88496', '2079-68915', '1459-96642'],
+].map(row => row.map(id => byId[id]));
+const wTilt = $('#wTilt');
+wTilt.innerHTML = wallRows.map(row => `<div class="w-row">${row.map(s => `<img src="${s.src}" alt="" loading="lazy" width="1512" height="982" data-open="${s.id}">`).join('')}</div>`).join('');
+const wRows = $$('.w-row', wTilt), wall = $('#wall'), plx = $$('.plx'), ledger = $('#ledger'), steps = $$('li', ledger);
+const ticketEl = $('#ticket');
+const navSecs = ['summary', 'problem', 'role', 'approach', 'challenges', 'solutions', 'results', 'next'].map(id => $('#' + id));
+let navCur = null;
+new IntersectionObserver((es, ob) => { if (es[0].isIntersecting) { $$('img', wall).forEach(i => { i.loading = 'eager'; }); ob.disconnect(); } }, {rootMargin: '150% 0px'}).observe(wall);
+function scrollFx() {
+  const vh = innerHeight, de = document.documentElement;
+  let cur = null;
+  for (const sec of navSecs) if (sec.getBoundingClientRect().top < vh * .45) cur = sec.id;
+  if (cur !== navCur) { navCur = cur; navEls.forEach(a => a.dataset.nav === cur ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')); }
+  body.style.setProperty('--rp', clamp(scrollY / Math.max(1, de.scrollHeight - vh)).toFixed(4));
+  const demoTop = ticketEl.getBoundingClientRect().top, demoEnd = peak.getBoundingClientRect().bottom;
+  const demo = demoTop < vh * .6 && demoEnd > vh * .4;
+  body.dataset.demo = demo ? 'on' : 'off';
+  if (reduce) return;
+  const wr = wall.getBoundingClientRect();
+  if (wr.bottom > 0 && wr.top < vh) {
+    const v = inView(wall);
+    wRows.forEach((row, i) => { const travel = Math.max(0, row.scrollWidth - innerWidth), t = i % 2 ? 1 - v : v; row.style.setProperty('--x', (-travel * (.12 + .7 * t)).toFixed(1) + 'px'); });
+  }
+  for (const f of plx) { const r = f.getBoundingClientRect(); if (r.bottom > 0 && r.top < vh) f.style.setProperty('--v', clamp((vh - r.top) / (vh * .9)).toFixed(3)); }
+  const lr = ledger.getBoundingClientRect();
+  if (lr.bottom > -50 && lr.top < vh + 50) {
+    const line = vh * .72;
+    ledger.style.setProperty('--lp', clamp((line - lr.top) / lr.height).toFixed(3));
+    for (const li of steps) li.dataset.on = li.getBoundingClientRect().top + 23 < line;
+  }
+}
+$$('.sec').forEach(sec => new IntersectionObserver(es => es.forEach(e => { sec.dataset.on = e.isIntersecting; }), {rootMargin: '-40% 0px -55% 0px'}).observe(sec));
+if (!reduce) {
+  const counter = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return; counter.unobserve(e.target);
+    const n = +e.target.dataset.n, t0 = performance.now();
+    (function tick(t) { const k = clamp((t - t0) / 900); e.target.textContent = Math.round(n * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(tick); })(t0);
+  }), {threshold: .6});
+  $$('.num').forEach(el => counter.observe(el));
+}
+
+function frame() {
+  const heroP = reduce ? 0 : pinP(hero), peakP = pinP(peak);
+  if (!reduce) updateHero(heroP);
+  updatePeak(peakP);
+  // chrome
+  const heroBottom = hero.getBoundingClientRect().bottom;
+  const inHero = heroBottom > 60;
+  body.dataset.chrome = !inHero || (!reduce && heroP >= 1) ? 'solid' : (!reduce && heroP > .5 && heroP < 1 ? 'gone' : 'clear');
+  const compact = narrow.matches;
+  scrollFx();
+  body.dataset.strip = inHero || (!compact && body.dataset.demo !== 'on') ? 'off' : 'on';
+  requestAnimationFrame(frame);
+}
+
+/* section nav */
+const navEls = $$('[data-nav]');
+
+
+/* keep a focused rail item on screen */
+const brand = $('#brand');
+$('#bRail').addEventListener('focusin', e => {
+  if (reduce || !e.target.matches('button')) return;
+  const items = $$('.b-item'), i = items.indexOf(e.target.closest('.b-item')); if (i < 0) return;
+  const rail = $('#bRail'), stage = rail.parentElement, it = items[i]; stage.scrollLeft = 0;
+  const r = brand.getBoundingClientRect(), span = r.height - innerHeight, travel = Math.max(1, rail.scrollWidth - innerWidth);
+  const x = it.offsetLeft - (innerWidth - it.offsetWidth) / 2;
+  document.documentElement.style.scrollBehavior = 'auto';
+  scrollTo({top: scrollY + r.top + span * clamp(x / travel), behavior: 'auto'});
+  document.documentElement.style.scrollBehavior = '';
+});
+
+setLev(10); writeMsg();
+ScrollCraft.mount(document.body);
+frame();
+})();
+</script>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+const wrap = document.getElementById('hLaptop'), cvs = document.getElementById('hCanvas'), stage = document.getElementById('hStage');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+async function boot() {
+  if (reduced || !document.createElement('canvas').getContext('webgl2')) return;
+  const THREE = await import('three');
+  const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+  const { RoomEnvironment } = await import('three/addons/environments/RoomEnvironment.js');
+  const renderer = new THREE.WebGLRenderer({canvas: cvs, antialias: true, alpha: true, powerPreference: 'high-performance'});
+  renderer.setPixelRatio(Math.min(innerWidth < 800 ? 1.5 : 2, devicePixelRatio));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.outputColorSpace = THREE.SRGBColorSpace;
+  const scene = new THREE.Scene();
+  scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), .04).texture;
+  scene.add(new THREE.AmbientLight(0xffffff, .35));
+  // Low raking sun from the same side as the cast shadows on the court.
+  const sun = new THREE.DirectionalLight(0xfff1d8, 1.25); sun.position.set(5, 8, 6); scene.add(sun);
+  const back = new THREE.DirectionalLight(0xe6eeff, .75); back.position.set(-2, 6, -7); scene.add(back);
+  const camera = new THREE.PerspectiveCamera(32, 1, .01, 100);
+
+  // The frame's CSP refuses fetch() of data: URIs, and the model embeds its buffer as one.
+  // So decode it here and hand the loader a GLB in memory, with images going through <img>.
+  const json = await (await fetch('macbook.json')).json();
+  const b64 = json.buffers[0].uri.split(',')[1], bin = Uint8Array.from(atob(b64), ch => ch.charCodeAt(0));
+  delete json.buffers[0].uri;
+  const enc = new TextEncoder().encode(JSON.stringify(json));
+  const jsonLen = (enc.length + 3) & ~3, binLen = (bin.length + 3) & ~3, total = 12 + 8 + jsonLen + 8 + binLen;
+  const glb = new Uint8Array(total).fill(0), dv = new DataView(glb.buffer);
+  dv.setUint32(0, 0x46546C67, true); dv.setUint32(4, 2, true); dv.setUint32(8, total, true);
+  dv.setUint32(12, jsonLen, true); dv.setUint32(16, 0x4E4F534A, true);
+  glb.fill(0x20, 20, 20 + jsonLen); glb.set(enc, 20);
+  const binAt = 20 + jsonLen; dv.setUint32(binAt, binLen, true); dv.setUint32(binAt + 4, 0x004E4942, true); glb.set(bin, binAt + 8);
+  const nativeBitmap = window.createImageBitmap; window.createImageBitmap = undefined;
+  const gltf = await new Promise((res, rej) => new GLTFLoader().parse(glb.buffer, '', res, rej)).finally(() => { window.createImageBitmap = nativeBitmap; });
+  const model = gltf.scene, pivot = model.getObjectByName('LidPivot'), screenMesh = model.getObjectByName('Screen');
+  const sc = document.createElement('canvas'); sc.width = 1512; sc.height = 982; const sx = sc.getContext('2d');
+  sx.fillStyle = '#000'; sx.fillRect(0, 0, 1512, 982);
+  const tex = new THREE.CanvasTexture(sc); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = renderer.capabilities.getMaxAnisotropy(); tex.flipY = true;
+  const screenMat = new THREE.MeshBasicMaterial({map: tex, color: 0x000000, toneMapped: false}); screenMesh.material = screenMat;
+  await new Promise(res => { const im = new Image(); im.onload = () => { sx.drawImage(im, 0, 0, 1512, 982); tex.needsUpdate = true; res(); }; im.onerror = res; im.src = 'img/1-16076.webp?v=3'; });
+
+  model.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(model), c = box.getCenter(new THREE.Vector3()), size = box.getSize(new THREE.Vector3());
+  const inner = new THREE.Group(); inner.scale.setScalar(4.2 / Math.max(size.x, size.y, size.z)); model.position.set(-c.x, -c.y, -c.z); inner.add(model);
+  const outer = new THREE.Group(); outer.add(inner); scene.add(outer);
+  const shc = document.createElement('canvas'); shc.width = shc.height = 128; const shx = shc.getContext('2d'); const g = shx.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, 'rgba(8,14,4,.62)'); g.addColorStop(1, 'rgba(8,14,4,0)'); shx.fillStyle = g; shx.fillRect(0, 0, 128, 128);
+  const contact = new THREE.Mesh(new THREE.PlaneGeometry(size.x * 1.3, size.z * 1.4), new THREE.MeshBasicMaterial({map: new THREE.CanvasTexture(shc), transparent: true, depthWrite: false}));
+  contact.rotation.x = -Math.PI / 2; contact.position.set(0, box.min.y - c.y - .02 * size.y, 0); inner.add(contact);
+
+  const u = pivot.userData || {};
+  const seat = {hingeY: pivot.position.y, hingeZ: pivot.position.z, openX: u.lidOpenX ?? 0, closedX: u.lidClosedX ?? 1.94, targetY: u.seatTargetY ?? .7};
+  seat.relY = (u.screenBottomY ?? 1.25) - seat.hingeY; seat.relZ = (u.screenBottomZ ?? -13.2) - seat.hingeZ;
+  function lid(open) {
+    pivot.rotation.x = seat.closedX + (seat.openX - seat.closedX) * open;
+    const th = pivot.rotation.x, sb = seat.hingeY + seat.relY * Math.cos(th) - seat.relZ * Math.sin(th);
+    pivot.position.y = seat.hingeY + Math.max(0, seat.targetY - sb);
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  // Where the camera must end up for the screen to fill the frame exactly.
+  const pos = screenMesh.geometry.attributes.position, v = new THREE.Vector3();
+  function screenExtents() {
+    outer.updateMatrixWorld(true);
+    let minx = 1e9, maxx = -1e9, miny = 1e9, maxy = -1e9, sumz = 0, topz = 0, botz = 0, topn = 0, botn = 0;
+    const step = Math.max(1, Math.floor(pos.count / 4000));
+    const pts = [];
+    for (let i = 0; i < pos.count; i += step) { v.fromBufferAttribute(pos, i).applyMatrix4(screenMesh.matrixWorld); pts.push(v.clone()); minx = Math.min(minx, v.x); maxx = Math.max(maxx, v.x); miny = Math.min(miny, v.y); maxy = Math.max(maxy, v.y); sumz += v.z; }
+    const h = maxy - miny;
+    pts.forEach(q => { if (q.y > maxy - h * .1) { topz += q.z; topn++; } if (q.y < miny + h * .1) { botz += q.z; botn++; } });
+    return {minx, maxx, miny, maxy, z: sumz / pts.length, dz: topz / Math.max(1, topn) - botz / Math.max(1, botn), dy: h};
+  }
+  let aimX = 0; const camStart = new THREE.Vector3(0, 0, 6), camEnd = new THREE.Vector3(0, 0, 3);
+  function solve() {
+    lid(1); outer.rotation.set(0, 0, 0); outer.scale.setScalar(1); outer.position.set(0, 0, 0);
+    let e = screenExtents(); aimX = Math.atan2(-e.dz, e.dy);
+    outer.rotation.x = aimX; e = screenExtents();
+    const t = Math.tan(camera.fov * Math.PI / 360);
+    const d = Math.max((e.maxy - e.miny) / (2 * t), (e.maxx - e.minx) / (2 * t * camera.aspect));
+    camEnd.set((e.minx + e.maxx) / 2, (e.miny + e.maxy) / 2, e.z + d);
+  }
+  function fit() {
+    const w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return;
+    renderer.setSize(w, h, false); camera.aspect = w / h;
+    camera.fov = 2 * Math.atan(Math.max(4.3, 5.6 / camera.aspect) / 2 / 6) * 180 / Math.PI; camera.updateProjectionMatrix();
+    solve(); want = true;
+  }
+  let want = true, cur = {open: 0, dive: 0, bright: 0};
+  function apply(st) {
+    lid(st.open);
+    screenMat.color.setScalar(st.bright);
+    const a = camera.aspect, wide = a > 1.05;
+    outer.rotation.set(lerp(.3, aimX, st.dive), lerp(wide ? -.5 : -.32, 0, st.dive), 0);
+    outer.scale.setScalar(lerp(wide ? .72 : .86, 1, st.dive));
+    outer.position.set(lerp(wide ? 1.05 : 0, 0, st.dive), lerp(wide ? -.42 : -1.05, 0, st.dive), 0);
+    camera.position.lerpVectors(camStart, camEnd, st.dive);
+    contact.material.opacity = 1 - st.dive;
+  }
+  let visible = true;
+  new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) requestAnimationFrame(loop); }).observe(stage);
+  new ResizeObserver(fit).observe(stage); fit();
+  addEventListener('heroprogress', () => { const t = window.__hero; if (t.open !== cur.topen || t.dive !== cur.tdive) want = true; });
+  function loop() {
+    if (!visible) return;
+    const t = window.__hero; let moving = false;
+    for (const k of ['open', 'dive', 'bright']) { const d = t[k] - cur[k]; if (Math.abs(d) > .0005) { cur[k] += d * .16; moving = true; } else cur[k] = t[k]; }
+    if (moving || want) { apply(cur); renderer.render(scene, camera); want = false; }
+    if (!wrap.classList.contains('is3d')) wrap.classList.add('is3d');
+    requestAnimationFrame(loop);
+  }
+  apply(cur); renderer.render(scene, camera); loop();
+}
+boot().catch(e => console.warn('3D laptop unavailable, using the CSS laptop', e));
+</script>
+
+</body>
+</html>
